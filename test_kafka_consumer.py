@@ -4,7 +4,7 @@ import json
 print("Kafka Consumer:")
 try:
     consumer = KafkaConsumer(
-        bootstrap_servers='localhost:9092',
+        bootstrap_servers='192.168.2.10:31090',
         value_deserializer=lambda m: json.loads(m.decode('utf-8'))
     )
     logging.info("Succesfully connected to Kafka server [{url}:{port}]".format(
@@ -14,7 +14,7 @@ try:
     val_sub = consumer.subscription()
     print('Subscription: {}'.format(val_sub))
 
-    kafka_topics = 'node-info'
+    kafka_topics = 'test2'
     logging.info('Subscribed to new topics: [{topics}]'.format(topics=kafka_topics))
 
 except:

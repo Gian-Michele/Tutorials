@@ -1,0 +1,568 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Schema E2 node info",
+  "description": "JSON Schema used to validate data sent by OAI and Phluido vRan to this interface.",
+  "default": {},
+  "examples": [
+    {
+      "cpuLoad": 3.5,
+      "eTime": 1963800,
+      "numRruDescriptors": 1,
+      "numUeDescriptors": 0,
+      "sTime": 1963500,
+      "rru": [
+        {
+          "dsThroughput": 6316,
+          "ipAddress_p1": "192.168.10.4",
+          "pci": 100,
+          "rtt_latency": 694,
+          "usThroughput": 936
+        }
+      ],
+      "ues": [
+        {
+          "pci": 10,
+          "rnti": 10,
+          "tmsi_flag": 10,
+          "mmec": 10,
+          "m-timsi": "timsi",
+          "dlThroughput": 10,
+          "ulThroughput": 10,
+          "rsrp": 10,
+          "wbCqi": 10,
+          "wbRi": 10,
+          "puschSnr": 10,
+          "pucchSnr": 10,
+          "dlMcs": 10,
+          "ulMcs": 10,
+          "numDlRbs": 10,
+          "numUlRbs": 10,
+		  "maxDlRank": 2,
+          "maxDlMcs":28,
+          "maxUlMcs":28,
+          "maxNumDlRbs": 30,
+          "maxNumUlRbs": 20,
+          "rlcBufferDl": 10,
+          "rlcBufferUl": 10,
+          "numNeighborDescriptors": 10,
+          "neighborCells": [
+            {
+              "pci": 10,
+              "rsrp": 10,
+              "rsrq": 10
+            },
+            {
+              "pci": 10,
+              "rsrp": 10,
+              "rsrq": 10
+            },
+            {
+              "pci": 10,
+              "rsrp": 10,
+              "rsrq": 10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "required": [
+    "cpuLoad",
+    "eTime",
+    "numRruDescriptors",
+    "numUeDescriptors",
+    "rru",
+    "sTime",
+    "ues"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "cpuLoad": {
+      "$id": "#/properties/cpuLoad",
+      "type": "number",
+      "title": "The cpuLoad schema",
+      "description": "Cpu load of the node currently sending this data.",
+      "default": 0.0,
+      "examples": [
+        3.5
+      ]
+    },
+    "eTime": {
+      "$id": "#/properties/eTime",
+      "type": "integer",
+      "title": "The eTime schema",
+      "description": "End time of the data capture in Unix Epoch.",
+      "default": 0,
+      "examples": [
+        1963800
+      ]
+    },
+    "numRruDescriptors": {
+      "$id": "#/properties/numRruDescriptors",
+      "type": "integer",
+      "title": "The numRruDescriptors schema",
+      "description": "Number of RRU descriptors available for the current node.",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "numUeDescriptors": {
+      "$id": "#/properties/numUeDescriptors",
+      "type": "integer",
+      "title": "The numUeDescriptors schema",
+      "description": "Number of Ue descriptors available for the current node.",
+      "default": 0,
+      "examples": [
+        0
+      ]
+    },
+    "sTime": {
+      "$id": "#/properties/sTime",
+      "type": "integer",
+      "title": "The sTime schema",
+      "description": "Start time of the data capture in Unix Epoch.",
+      "default": 0,
+      "examples": [
+        1963500
+      ]
+    },
+    "rru": {
+      "$id": "#/properties/rru",
+      "type": "array",
+      "title": "The Rru Schema",
+      "description": "RRU data.",
+      "default": [],
+      "examples": [
+        [
+          {
+            "dsThroughput": 6316,
+            "ipAddress_p1": "192.168.10.4",
+            "pci": 100,
+            "rtt_latency": 694,
+            "usThroughput": 936
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/rru/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "description": "Items inside the rru element.",
+        "default": {},
+        "examples": [
+          {
+            "dsThroughput": 6316,
+            "ipAddress_p1": "192.168.10.4",
+            "pci": 100,
+            "rtt_latency": 694,
+            "usThroughput": 936
+          }
+        ],
+        "required": [
+          "dsThroughput",
+          "ipAddress_p1",
+          "pci",
+          "rtt_latency",
+          "usThroughput"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "dsThroughput": {
+            "$id": "#/properties/rru/items/properties/dsThroughput",
+            "type": "number",
+            "title": "The dsThroughput schema",
+            "description": "the DL traffic in Kbps on the Fronthauling",
+            "default": 0.0,
+            "examples": [
+              25000.34
+            ]
+          },
+          "ipAddress_p1": {
+            "$id": "#/properties/rru/items/properties/ipAddress_p1",
+            "type": "string",
+            "title": "The ipAddress_p1 schema",
+            "description": "this is the ip address of the RRU",
+            "default": "",
+            "examples": [
+              "192.168.10.4"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "pci": {
+            "$id": "#/properties/rru/items/properties/pci",
+            "type": "integer",
+            "title": "The pci schema",
+            "description": "The Physical Cell ID transmitted by the RRU",
+            "default": 0,
+            "examples": [
+              100
+            ]
+          },
+          "rtt_latency": {
+            "$id": "#/properties/rru/items/properties/rtt_latency",
+            "type": "number",
+            "title": "The rtt_latency schema",
+            "description": "this is the rrt latency on the Fronthauling in us.",
+            "default": 0.0,
+            "examples": [
+              25.2
+            ]
+          },
+          "usThroughput": {
+            "$id": "#/properties/rru/items/properties/usThroughput",
+            "type": "number",
+            "title": "The usThroughput schema",
+            "description": "The UL traffic over the fronthaulink in Kbps",
+            "default": 0.0,
+            "examples": [
+              1213.3
+            ]
+          }
+        }
+      }
+    },
+    "ues": {
+      "$id": "#/properties/ues",
+      "type": "array",
+      "title": "The ues schema",
+      "description": "An explanation about the purpose of this instance.",
+      "default": [],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/ues/items",
+        "type": "object",
+        "title": "The Items schema",
+        "description": "This objectc contains an array, each element is the information of an UE connect to the v(DU+CU).",
+        "default": {},
+        "required": [
+          "pci",
+          "rnti",
+          "tmsi_flag",
+          "mmec",
+          "m-timsi",
+          "dlThroughput",
+          "ulThroughput",
+          "rsrp",
+          "wbCqi",
+          "wbRi",
+          "puschSnr",
+          "pucchSnr",
+          "dlMcs",
+          "ulMcs",
+          "numDlRbs",
+          "numUlRbs",
+	  "maxDlRank",
+	  "maxDlMcs",
+	  "maxUlMcs",
+          "maxNumDlRbs",
+          "maxNumUlRbs",
+          "rlcBufferDl",
+          "rlcBufferUl",
+          "numNeighborDescriptors",
+          "neighborCells"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "pci": {
+            "$id": "#/properties/ues/items/properties/pci",
+            "type": "integer",
+            "title": "The pci schema",
+            "description": "Identified the sering PCI",
+            "default": 0,
+            "examples": [
+              100
+            ]
+          },
+          "rnti": {
+            "$id": "#/properties/ues/items/properties/rnti",
+            "type": "integer",
+            "title": "The rnti schema",
+            "description": "This is the Radio Network Temporary Identifier for this UE",
+            "default": 0,
+            "examples": [
+              10
+            ]
+          },
+          "tmsi_flag": {
+            "$id": "#/properties/ues/items/properties/tmsi_flag",
+            "type": "integer",
+            "title": "The tmsi_flag schema",
+            "description": "This is a flag for the Temporary identifier of the UE, When the value is 0 means that the m-tmsi is not already correct",
+            "default": 0,
+            "examples": [
+              0
+            ]
+          },
+          "mmec": {
+            "$id": "#/properties/ues/items/properties/mmec",
+            "type": "integer",
+            "title": "The mmec schema",
+            "description": "is a part of UE identifier",
+            "default": 0,
+            "examples": [
+              0
+            ]
+          },
+          "m-timsi": {
+            "$id": "#/properties/ues/items/properties/m-timsi",
+            "type": "string",
+            "title": "The m-timsi schema",
+            "description": "This is the m-tmsi value representing the Core Network temporary identifier.",
+            "default": "",
+            "examples": [
+              "0000"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "dlThroughput": {
+            "$id": "#/properties/ues/items/properties/dlThroughput",
+            "type": "number",
+            "title": "The dlThroughput schema",
+            "description": "User RLC DL Throughput in Kbps.",
+            "default": 0.0,
+            "examples": [
+              2340.34
+            ]
+          },
+          "ulThroughput": {
+            "$id": "#/properties/ues/items/properties/ulThroughput",
+            "type": "number",
+            "title": "The ulThroughput schema",
+            "description": "User RLC UL Throughpt in Kpbs",
+            "default": 0.0,
+            "examples": [
+              34.4
+            ]
+          },
+          "rsrp": {
+            "$id": "#/properties/ues/items/properties/rsrp",
+            "type": "number",
+            "title": "The rsrp schema",
+            "description": "RS Recevied Power in dBm",
+            "default": 0.0,
+            "examples": [
+              34.3
+            ]
+          },
+          "wbCqi": {
+            "$id": "#/properties/ues/items/properties/wbCqi",
+            "type": "number",
+            "title": "The wbCqi schema",
+            "description": "Averaged Wide Band reported by the UE.",
+            "default": 0.0,
+            "examples": [
+              123.2
+            ]
+          },
+          "wbRi": {
+            "$id": "#/properties/ues/items/properties/wbRi",
+            "type": "number",
+            "title": "The wbRi schema",
+            "description": "Averaged Rank Indicator reported by the UE.",
+            "default": 0.0,
+            "examples": [
+              1.3
+            ]
+          },
+          "puschSnr": {
+            "$id": "#/properties/ues/items/properties/puschSnr",
+            "type": "number",
+            "title": "The puschSnr schema",
+            "description": "UL SINR measured by the v(DU+CU) on the PUSCH channel.",
+            "default": 0.0,
+            "examples": [
+              2.3
+            ]
+          },
+          "pucchSnr": {
+            "$id": "#/properties/ues/items/properties/pucchSnr",
+            "type": "number",
+            "title": "The pucchSnr schema",
+            "description": "UL SINR measured by the v(DU+CU) on the PUCCH.",
+            "default": 0.0,
+            "examples": [
+              2.3
+            ]
+          },
+          "dlMcs": {
+            "$id": "#/properties/ues/items/properties/dlMcs",
+            "type": "number",
+            "title": "The dlMcs schema",
+            "description": "Averaged information on the MCS used by the UE for DL transmission",
+            "default": 0.0,
+            "examples": [
+              10.2
+            ]
+          },
+          "ulMcs": {
+            "$id": "#/properties/ues/items/properties/ulMcs",
+            "type": "number",
+            "title": "The ulMcs schema",
+            "description": "Averaged information used by the UE for UL reception",
+            "default": 0.0,
+            "examples": [
+              10.2
+            ]
+          },
+          "numDlRbs": {
+            "$id": "#/properties/ues/items/properties/numDlRbs",
+            "type": "number",
+            "title": "The numDlRbs schema",
+            "description": "number of Downlink PRB used",
+            "default": 0.0,
+            "examples": [
+              23.2
+            ]
+          },
+          "numUlRbs": {
+            "$id": "#/properties/ues/items/properties/numUlRbs",
+            "type": "number",
+            "title": "The numUlRbs schema",
+            "description": "number of Uplink PRB used",
+            "default": 0.0,
+            "examples": [
+              2.3
+            ]
+          },
+          "maxDlRank": {
+            "$id": "#/properties/ues/items/properties/maxDlRank",
+            "type": "number",
+            "title": "The maxDlRank schema",
+            "description": "max DL rank configured for this UE (configured by RIC)",
+            "default": 2,
+            "examples": [
+              2.0
+            ]
+          },
+          "maxDlMcs": {
+            "$id": "#/properties/ues/items/properties/maxDlMcs",
+            "type": "number",
+            "title": "The maxDlMcs schema",
+            "description": "Max DL Mcs usable for this UE (configured by RIC)",
+            "default": 28,
+            "examples": [
+              28
+            ]
+          },
+          "maxNumUlMcs": {
+            "$id": "#/properties/ues/items/properties/maxUlMcs",
+            "type": "number",
+            "title": "The maxUlMcs schema",
+            "description": "Max UL Mcs usable for this UE (configured by RIC)",
+            "default": 28,
+            "examples": [
+              23
+            ]
+          },
+          "maxNumDlRbs": {
+            "$id": "#/properties/ues/items/properties/maxNumDlRbs",
+            "type": "number",
+            "title": "The maxNumDlRbs schema",
+            "description": "Max PRB usable in DL by this UE (configured by RIC)",
+            "default": 0.0,
+            "examples": [
+              30.0
+            ]
+          },
+          "maxNumUlRbs": {
+            "$id": "#/properties/ues/items/properties/maxNumUlRbs",
+            "type": "number",
+            "title": "The maxNumUlRbs schema",
+            "description": "Max PRB usable in UL by this UE (configured by RIC)",
+            "default": 0.0,
+            "examples": [
+              20.0
+            ]
+          },
+          "rlcBufferDl": {
+            "$id": "#/properties/ues/items/properties/rlcBufferDl",
+            "type": "number",
+            "title": "The rlcBufferDl schema",
+            "description": "The DL RLC buffer status at the moment this message is generated",
+            "default": 0.0,
+            "examples": [
+              2340.34
+            ]
+          },
+          "rlcBufferUl": {
+            "$id": "#/properties/ues/items/properties/rlcBufferUl",
+            "type": "number",
+            "title": "The rlcBufferUl schema",
+            "description": "The UL RLC buffer status at the moment this message is generated",
+            "default": 0.0,
+            "examples": [
+              2344.35
+            ]
+          },
+          "numNeighborDescriptors": {
+            "$id": "#/properties/ues/items/properties/numNeighborDescriptors",
+            "type": "integer",
+            "title": "The numNeighborDescriptors schema",
+            "description": "Number of Neighbord Cells measured by the UE",
+            "default": 0,
+            "examples": [
+              1
+            ]
+          },
+          "neighborCells": {
+            "$id": "#/properties/ues/items/properties/neighborCells",
+            "type": "array",
+            "title": "The neighborCells schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "additionalItems": true,
+            "items": {
+              "$id": "#/properties/ues/items/properties/neighborCells/items/anyOf/0",
+              "type": "object",
+              "title": "The items schema",
+              "description": "Array containing in each element rsrp for each pci measured as neighbor cell ",
+              "default": {},
+              "required": [
+                "pci",
+                "rsrp",
+                "rsrq"
+              ],
+              "additionalProperties": true,
+              "properties": {
+                "pci": {
+                  "$id": "#/properties/ues/items/properties/neighborCells/items/anyOf/0/properties/pci",
+                  "type": "integer",
+                  "title": "The pci schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": 0,
+                  "examples": [
+                    10
+                  ]
+                },
+                "rsrp": {
+                  "$id": "#/properties/ues/items/anyOf/0/properties/neighborCells/items/anyOf/0/properties/rsrp",
+                  "type": "number",
+                  "title": "The rsrp schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": 0.0,
+                  "examples": [
+                    10.0
+                  ]
+                },
+                "rsrq": {
+                  "$id": "#/properties/ues/items/anyOf/0/properties/neighborCells/items/anyOf/0/properties/rsrq",
+                  "type": "number",
+                  "title": "The rsrq schema",
+                  "description": "An explanation about the purpose of this instance.",
+                  "default": 0.0,
+                  "examples": [
+                    10.0
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -118,6 +118,7 @@ class ReceivingInterface:
                 loop=loop,
                 user=self.nats_user,
                 password=self.nats_pass,
+                connect_timeout=20,
                 tls=ssl_ctx)
         else:
             await self.nc.connect(
@@ -176,6 +177,29 @@ class InstructiveInterface:
         """ retrieve the singleton instance of Controller class """
         return InstructiveInterface.__instance
 
+    # function used to send message from acceleran drax platform
+    def tx_from_external_platfom(self, message_to_tx):
+
+        # read information for transmission
+        config = configparser.ConfigParser()
+        fp_config = open('nats_config.ini')
+        config.read_file(fp_config)
+        fp_config.close()
+
+        nc_tx = NATSClient()  # nc client to receive message from subscription
+        nats_server_ip = config.get('NATS_SERVER', 'ip_address', fallback="163.162.89.28")
+        nats_server_port = config.getint('NATS_SERVER', 'port', fallback=4222)
+        nats_use_tls = config.get('NATS_SERVER', 'use_tls')
+        nats_user = config.get('NATS_SERVER', 'user')
+        nats_pass = config.get('NATS_SERVER', 'password')
+        nats_cert_file = config.get('NATS_SERVER', 'cert_file')
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        self.nats_counter_tx = self.nats_counter_tx + 1
+        loop.run_until_complete(self.send_to_nats(nc_tx, loop, message_to_tx, self.nats_counter_tx,
+                                                  nats_server_ip, nats_server_port, self.topic, nats_use_tls,
+                                                  nats_user, nats_pass, nats_cert_file))
+
     # function used to and send message to a splinter
     def vran_instructive_message_generation(self, splinter_id, rnti, pci, num_resource=-1, direction='DL',
                                             mcs=-1, rank=-1):
@@ -233,3 +257,5 @@ class InstructiveInterface:
         print('Sent Json {} bytes to NATS server at {}:{}'.format(len(message), nats_server_ip, nats_server_port))
         # Terminate connection to NATS.
         await nc_tx.close()
+
+
