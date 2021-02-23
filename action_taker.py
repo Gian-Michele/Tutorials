@@ -37,7 +37,9 @@ def trigger_handover(settings, handover_list):
         # TODO fix settinsg reading
         with settings.lock:
             nats_url = settings.configuration['config']['NATS_URL']
+            print("nats_url: {}".format(nats_url))
             drax_cmd_topic = settings.configuration['config']['DRAX_COMMAND_TOPIC']
+            print("nats_topic: {}".format(drax_cmd_topic))
 
         nats_publish(nats_url, peer_msg, drax_cmd_topic)
 

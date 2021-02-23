@@ -2,7 +2,6 @@ import logging
 import threading
 from settings import Settings
 import redis_listener
-import time
 import kafka_producer
 import queue
 import processor
@@ -16,7 +15,8 @@ import rest_api_interface
 import json
 import time
 from controller.nats_interface import ReceivingInterface
-import tx_NATS_static
+from controller import nats_interface_static
+
 
 def goodbye(settings):
     settings.set_settings('ready', 'False')
@@ -129,9 +129,9 @@ if __name__ == '__main__':
                 if 'type' in pkt:
 
                     if pkt['type'] == 'get_info':
-                        if pkt['pci'] == 1:
-                            id = 152
                         if pkt['pci'] == 2:
+                            id = 152
+                        if pkt['pci'] == 1:
                             id = 153
                         result = rest_api_interface.get_cell_status(id)
                         topic_list_2_ric = list()
@@ -152,8 +152,8 @@ if __name__ == '__main__':
                             'pci': pkt['pci'],
                             'status': val
                         }
-                        tx_NATS_static.tx_to_external_platform(msg_new, 'acceleran_2_ric', 1)
-                        # tx.tx_from_external_platform(msg_new)
+                        nats_interface_static.tx_to_external_platform(msg_new, 'acceleran_2_ric', 1)
+
                 else:
                     print('unknown message')
         time.sleep(2)

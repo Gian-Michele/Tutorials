@@ -27,6 +27,7 @@ class ReceivingInterface:
         self.pars_config.read_file(fp_config)
         fp_config.close()
 
+        self.loop = None
         self.nc = NATSClient()      # nc client to receive message from subscription
         self.nats_counter = 0
         self.nats_server_ip = self.pars_config.get('NATS_SERVER', 'ip_address', fallback="163.162.89.28")
@@ -43,8 +44,10 @@ class ReceivingInterface:
         self.last_received_pkt = dict()
         self.last_time_packet = time.time()
 
-        threading.Thread(target=self.__listen_from_oai_thread_nats, args=(self.nats_server_ip, self.nats_server_port,
-                                                                          topic_subcription), daemon=True).start()
+        self.main_thread = threading.Thread(target=self.__listen_from_oai_thread_nats,
+                                            args=(self.nats_server_ip, self.nats_server_port, topic_subcription),
+                                            daemon=True)
+        self.main_thread.start()
 
     @staticmethod
     def get_instance():
@@ -57,6 +60,10 @@ class ReceivingInterface:
         val = self.last_received_pkt
         self.__lock.release()
         return val
+
+    def stop_recv(self):
+        self.loop.stop()
+        print("Complete Reception")
 
     # simple function to receive information from the last received packet in NATS BUS
     def get_recv_pack_timing(self):
@@ -84,6 +91,7 @@ class ReceivingInterface:
         # Using the secondary thread loop to receive packets from controller_interface through NATS
         # Creating a loop for the current thread and setting to be used for asyncio
         loop = asyncio.new_event_loop()
+        self.loop = loop
         asyncio.set_event_loop(loop)
 
         # Used to share data between coroutines about last packet arrival time
@@ -178,7 +186,7 @@ class InstructiveInterface:
         return InstructiveInterface.__instance
 
     # function used to send message from acceleran drax platform
-    def tx_from_external_platfom(self, message_to_tx):
+    def tx_to_external_platform(self, message_to_tx):
 
         # read information for transmission
         config = configparser.ConfigParser()

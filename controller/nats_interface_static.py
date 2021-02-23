@@ -7,6 +7,7 @@ import ssl
 from nats.aio.client import Client as NATSClient
 
 
+# single message sent to NATS Buffer
 def tx_to_external_platform(message_to_tx, topic, num_message):
 
     # read information for transmission

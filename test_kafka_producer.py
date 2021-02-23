@@ -1,7 +1,7 @@
 from kafka import KafkaProducer
 import json
 import time
-kafka_producer = KafkaProducer(bootstrap_servers='localhost:9092',
+kafka_producer = KafkaProducer(bootstrap_servers='192.168.2.10:31090',
                                value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 if kafka_producer.bootstrap_connected():
     print('Connected to Kafka')

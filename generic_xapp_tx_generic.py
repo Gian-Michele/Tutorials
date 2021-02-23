@@ -11,44 +11,66 @@
 #       
 ########################################################################
 
-from controller.nats_interface import InstructiveInterface, ReceivingInterface
+from controller import nats_interface_static
+from controller.nats_interface import ReceivingInterface
 import argparse
 import json
 import time
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--ID', action="store", dest="id", required=True, help='cell_id')
+    #                                                                                          ' ON/OFF')
+    args = parser.parse_args()
+
+    cell_id = args.id
+    MAX_TIME = 20   # Max Number of cycle
+
     topic = 'ric_2_acceleran'
+    # selection of the PCI
+    if int(cell_id) == 152:
+        msg = {
+            'type': 'get_info',
+            'pci': 2
+        }
+    else:
+        msg = {
+            'type': 'get_info',
+            'pci': 1
+        }
 
-    tx_info = InstructiveInterface(topic)
-
-    msg = {
-        'type': 'get_info',
-        'pci': 2
-    }
-
-    tx_info.get_instance().tx_from_external_platform(msg)
+    nats_interface_static.tx_to_external_platform(msg, topic, 1)
     topic_list = list()
     topic_list.append('acceleran_2_ric')
     rx_info = ReceivingInterface(topic_list)
+    topic = 'acceleran_2_ric'
     last_t = -1
     packet_counter = 0
+    waiting_time = 0
     find = False
     while find is not True:
         pkt = rx_info.get_instance().get_recv_pack()
         t = rx_info.get_instance().get_recv_pack_timing()
         if len(pkt) > 0:
             if last_t < t:
-                packet_counter = packet_counter + 1
+                # pkt = None
+                # pkt = nats_interface_static.rx_from_external_platform(topic)
+                # if pkt is not None:
                 pkt = json.dumps(pkt, indent=2)
                 print("\n##########################################")
-                print("receive the packet number {} a time: {}".format(packet_counter, t))
+                print("receive the packet number {} a time: {}".format(packet_counter, time.time()))
                 print("{}".format(pkt))
-                last_t = t
                 find = True
                 rx_info.get_instance().stop_recv()
+        if waiting_time < MAX_TIME:
+            waiting_time = waiting_time + 1
+        else:
+            break
         time.sleep(1)
 
+    if find is False:
+        print('Time expired - No messages arrived')
 
 
 

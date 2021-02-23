@@ -42,10 +42,6 @@ def create_api_url(settings, endpoint):
 
 def run(settings, in_queue, out_queue, data_store):
 
-    # Loop
-    while True:
-        data = in_queue.get()
-
         ### YOUR CODE HERE
 
 
@@ -66,9 +62,9 @@ def run(settings, in_queue, out_queue, data_store):
         # data_store = data
 
         # ### Example 4: Send handover command
-        # handover_list = [
-        #     {'ueIdx': 'ueRicId_to_handover', 'targetCell': 'Bt1Cell', 'sourceCell': 'Bt2Cell'}
-        # ]
+        handover_list = [
+             {'ueIdx': 'ueRicId_to_handover', 'targetCell': 'Bt1Cell', 'sourceCell': 'Bt2Cell'}
+        ]
         # send_handover_command(settings, handover_list)
 
         ### Example 5: Send subband masking command

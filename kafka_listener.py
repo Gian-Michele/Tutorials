@@ -328,13 +328,13 @@ def run(settings, in_queue):
             if cell_152_on is True:
                 try:
                     validate(default_json_152, json_schema)
-                    tx_info.get_instance().tx_from_external_platform(default_json_152)
+                    tx_info.get_instance().tx_to_external_platform(default_json_152)
                 except SchemaError as ex:
                     print("Schema for cell 152 is Not valid:\n{}".format(ex))
             if cell_153_on is True:
                 try:
                     validate(default_json_153, json_schema)
-                    tx_info.get_instance().tx_from_external_platform(default_json_153)
+                    tx_info.get_instance().tx_to_external_platform(default_json_153)
                 except SchemaError as ex:
                     print("Schema for cell 153 is Not valid:\n{}".format(ex))
 
