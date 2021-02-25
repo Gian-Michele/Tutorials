@@ -8,6 +8,7 @@
 import json
 import requests
 import argparse
+import time
 
 
 # to reboot the cell
@@ -34,6 +35,20 @@ def get_cell_info(cell):
         return None
     else:
         return resp.json()
+
+
+# get the cell pci value
+def get_cell_pci(cell):
+    url = 'http://192.168.2.10:31315/api/cellconfiguration/summary/Cell' + str(cell)
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        # This means something went wrong.
+        print("Error code {}".format(resp.status_code))
+        return None
+    else:
+        info = resp.json()
+        pci = info['cell']['phy']['physical_cell_id']
+        return pci
 
 
 # get all the cell  fool info
@@ -86,6 +101,17 @@ def cell_switch(cell):
     "configureMocn": "true"
     }
     print("Function Not ready")
+
+    url = "http://192.168.2.10:31315/api/cellconfiguration/full/Cell" + str(cell)
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        # This means something went wrong.
+        print("Error code {}".format(resp.status_code))
+        return None
+    else:
+        info = resp.json()
+        print('Result \n{}'.format(json.dumps(info, indent=2)))
+
     return None
 
 
@@ -108,6 +134,7 @@ def get_cell_status(cell):
 
 if __name__ == '__main__':
 
+    # cell_switch(152)
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--ID', action="store", dest="id", required=True, help='cell_id')
     parser.add_argument('-r', '--REBOOT', action="store", dest="reboot", required=False, help='reboot ON/OFF')
@@ -137,11 +164,11 @@ if __name__ == '__main__':
 
         if get_cell_status(cell_id) is True:
             print('-------------')
-            print('Cell {} is ON-AIR'.format(cell_id))
+            print('{}: Cell {} is ON-AIR'.format(time.ctime(time.time()), cell_id))
             print('-------------')
         else:
             print('-------------')
-            print('Cell {} is NOT ON-AIR'.format(cell_id))
+            print('{}: Cell {} is NOT ON-AIR'.format(time.ctime(time.time()), cell_id))
             print('-------------')
 
     if reboot == 'ON':

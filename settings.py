@@ -8,12 +8,32 @@ from datetime import datetime
 
 class Settings:
     def __init__(self):
+        self.pci_152 = 0    # default value
+        self.pci_153 = 1    # default value
+        self.pci_152_status = 'OFF'    # ON/OFF default value OFF
+        self.pci_153_status = 'OFF'    # ON/OFF default value OFF
+        date = str(datetime.now())
+        date_tmp = date.split(':')
+        date_tmp2 = date_tmp[0] + '-' + date_tmp[1] + '-' + date_tmp[2]
+        date_time = date_tmp2.split(' ')
+        log_file_name = date_time[0] + '-' + date_time[1] + '-xapp.log'
+
         self.lock = Lock()
         self.configuration = xapp_configuration.configuration
 
         # Logging file configuration
-        logging.basicConfig(format='[%(levelname)s] %(asctime)s (%(threadName)s) %(message)s',
-                            level=self.configuration['config']['LOG_LEVEL'])
+        self.log_obj = logging.getLogger('xapp-log')
+        formatter = logging.Formatter('[%(levelname)s] %(asctime)s (%(threadName)s) %(message)s')
+        self.file_handler = logging.FileHandler(log_file_name)
+        self.file_handler.setFormatter(formatter)
+        self.log_level = self.configuration['config']['LOG_LEVEL']
+        if self.log_level == 20:
+            self.log_obj.setLevel(level=logging.INFO)
+        self.log_obj.addHandler(self.file_handler)
+
+        # information on the log level
+        # logging.basicConfig(format='[%(levelname)s] %(asctime)s (%(threadName)s) %(message)s',
+        #                    level=self.configuration['config']['LOG_LEVEL'])
 
         # If config exists in redis, take it and use it
         try:
@@ -79,3 +99,22 @@ class Settings:
             r.set(key, value)
         except:
             logging.error('Failed to write settings to Redis!')
+
+    # set the pci value of the cells
+    def set_pci(self, pci_152, pci_153):
+        self.pci_152 = pci_152
+        self.pci_153 = pci_153
+
+    # return the information on the pci involved
+    def get_pci(self):
+        return self.pci_152, self.pci_153
+
+    def print_log(self, msg, type_log):
+        if type_log == 'INFO':
+            self.log_obj.info(msg)
+        if type_log == 'DEBUG':
+            self.log_obj.debug(msg)
+        if type_log == 'WARNING':
+            self.log_obj.warning(msg)
+        if type_log == 'ERROR':
+            self.log_obj.error(msg)

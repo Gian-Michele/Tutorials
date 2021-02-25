@@ -5,7 +5,11 @@ import json
 
 def run(settings):
     try:
-        r = StrictRedis(host=settings.configuration['config']['REDIS_URL'], port=settings.configuration['config']['REDIS_PORT'])
+        address_val = settings.configuration['config']['REDIS_URL']
+        port_val = settings.configuration['config']['REDIS_PORT']
+        print('address: {}'.format(address_val))
+        print('port: {}'.format(port_val))
+        r = StrictRedis(host=address_val, port=port_val)
 
         pubsub = r.pubsub()
         pubsub.psubscribe('__keyspace@0__:*')

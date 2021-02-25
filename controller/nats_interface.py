@@ -63,7 +63,7 @@ class ReceivingInterface:
 
     def stop_recv(self):
         self.loop.stop()
-        print("Complete Reception")
+        print("Stop Reception")
 
     # simple function to receive information from the last received packet in NATS BUS
     def get_recv_pack_timing(self):

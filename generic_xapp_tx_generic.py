@@ -27,7 +27,7 @@ if __name__ == '__main__':
     cell_id = args.id
     MAX_TIME = 20   # Max Number of cycle
 
-    topic = 'ric_2_acceleran'
+    topic = 'ric_2_accelleran'
     # selection of the PCI
     if int(cell_id) == 152:
         msg = {
@@ -42,9 +42,9 @@ if __name__ == '__main__':
 
     nats_interface_static.tx_to_external_platform(msg, topic, 1)
     topic_list = list()
-    topic_list.append('acceleran_2_ric')
+    topic_list.append('accelleran_2_ric')
     rx_info = ReceivingInterface(topic_list)
-    topic = 'acceleran_2_ric'
+    # topic = 'accelleran_2_ric'
     last_t = -1
     packet_counter = 0
     waiting_time = 0
@@ -70,6 +70,7 @@ if __name__ == '__main__':
         time.sleep(1)
 
     if find is False:
+        rx_info.get_instance().stop_recv()
         print('Time expired - No messages arrived')
 
 
