@@ -26,7 +26,9 @@ def nats_publish(nats_url, msg, topic):
 
 
 def trigger_handover(settings, handover_list):
-    logging.info("Triggering the handovers...")
+    with settings.lock:
+        if settings.log_level >= 10:
+            settings.print_log("Triggering the handovers...", 'INFO')
 
     # Trigger all handover
     for item in handover_list:
@@ -36,18 +38,20 @@ def trigger_handover(settings, handover_list):
         # Send the message to NATS
         # TODO fix settinsg reading
         with settings.lock:
-            nats_url = settings.configuration['config']['NATS_URL']
+            nats_url = settings.nats_url
             print("nats_url: {}".format(nats_url))
-            drax_cmd_topic = settings.configuration['config']['DRAX_COMMAND_TOPIC']
+            drax_cmd_topic = settings.nats_topic
             print("nats_topic: {}".format(drax_cmd_topic))
+            if settings.log_level >= 10:
+                settings.print_log('NATS url: {}, NATS topic: {}'.format(nats_url, drax_cmd_topic), 'INFO')
 
         nats_publish(nats_url, peer_msg, drax_cmd_topic)
-
-        logging.info("Sent handover command to move UE [{ue_id}] from [{serving_cell}] to [{target_cell}]".format(
-            ue_id=item['ueIdx'],
-            serving_cell=item['sourceCell'],
-            target_cell=item['targetCell']
-        ))
+        with settings.lock:
+            if settings.log_level >= 10:
+                settings.print_log("Sent handover command to move UE [{}] from [{}] to [{}]".format(item['ueIdx'],
+                                                                                                    item['sourceCell'],
+                                                                                                    item['targetCell'])
+                                   , 'INFO')
 
 
 def trigger_sub_band_selection():

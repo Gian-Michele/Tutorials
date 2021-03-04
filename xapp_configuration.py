@@ -1,12 +1,14 @@
 configuration = {
     "metadata": {
-        "name": "xApp Name",
+        "name": "xApp Tim",
         "configName": "",
         "namespace": "default"
     },
     "description": "xApp Description...",
-    "last_modified": "06/07/2020 23:32:00",
+    "last_modified": "06/03/2021 23:32:00",
     'config': {
+        'NATS_URL': 'nats://192.168.2.10:31000',
+        'DRAX_COMMAND_TOPIC': 'Topic_OPENRAN_COMMANDS.OranController',
         'REDIS_URL': '192.168.2.10',
         'REDIS_PORT': 32000,
         'LOG_LEVEL': 40,  # CRITICAL=50, ERROR=40, WARNING=30, INFO=10, DEBUG=20, NOTSET=0

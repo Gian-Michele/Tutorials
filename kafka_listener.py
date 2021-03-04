@@ -2,8 +2,30 @@ from kafka import KafkaConsumer
 import json
 import logging
 import datetime
+import time
 from controller.nats_interface import InstructiveInterface
 from jsonschema import validate, SchemaError
+
+
+def rsrp_2_dbm(val):
+    return -140 + val
+
+
+def rsrq_2_db(val):
+    return -20 + val/2
+
+
+# function used to find an UE in the json structure
+def find_ue_id(json_info, ue_id):
+    found = False
+    num_ues = len(json_info['ues'])
+    if num_ues > 0:
+        for i in range(0, num_ues):
+            if json_info['ues'][i]['rnti']== ue_id:
+                found = True
+                return found
+
+    return found
 
 
 # function to update the json to tx when a payload is received
@@ -41,19 +63,24 @@ def add_measurement_to_json(json_to_tx, payload_rx, ue_serving_list, other_ue, p
 
     # When is the serving Cell
     if payload_rx['ueMeasurement']['cellId'] == payload_rx['ueMeasurement']['ueCellId']:
-        ue_id = payload_rx['ueMeasurement']['ueRicId'].split('_')[1]
-        if ue_id not in ue_serving_list:
-            ue_serving_list.append(int(ue_id))
+        ue_id = int(payload_rx['ueMeasurement']['ueRicId'].split('_')[1])
+
+        if find_ue_id(json_to_tx, ue_id) is False:
+
+            if ue_id not in ue_serving_list:
+                ue_serving_list.append(ue_id)
+
             json_to_tx['numUeDescriptors'] = json_to_tx['numUeDescriptors'] + 1
             ue = ue_info_2_tx
             if payload_rx['ueMeasurement']['ueCellId'] == 'Cell152':
                 ue['pci'] = pci152
             else:
                 ue['pci'] = pci153
-            ue['rsrp'] = payload_rx['ueMeasurement']['rsrp']
-            ue['rnti'] = int(ue_id)
-            ue['m-timsi'] = ue_id
-            ue['mmec'] = int(ue_id)
+
+            ue['rsrp'] = rsrp_2_dbm(payload_rx['ueMeasurement']['rsrp'])
+            ue['rnti'] = ue_id
+            ue['m-timsi'] = str(ue_id)
+            ue['mmec'] = ue_id
             if 'ues' in json_to_tx:  # when more the 1 UE is in the network
                 json_to_tx['ues'].append(ue)
             else:
@@ -69,9 +96,9 @@ def add_measurement_to_json(json_to_tx, payload_rx, ue_serving_list, other_ue, p
 
     else:
         # this is not a serving cell
-        ue_id = payload_rx['ueMeasurement']['ueRicId'].split('_')[1]
+        ue_id = int(payload_rx['ueMeasurement']['ueRicId'].split('_')[1])
         if ue_id not in other_ue:
-            other_ue.append(int(ue_id))
+            other_ue.append(ue_id)
         if payload_rx['ueMeasurement']['cellId'] == 'Cell152':
             pci = pci152
         else:
@@ -79,8 +106,8 @@ def add_measurement_to_json(json_to_tx, payload_rx, ue_serving_list, other_ue, p
 
         info_neighbor = {
             "pci": pci,
-            "rsrp": payload_rx['ueMeasurement']['rsrp'],
-            "rsrq": payload_rx['ueMeasurement']['rsrq']
+            "rsrp": rsrp_2_dbm(payload_rx['ueMeasurement']['rsrp']),
+            "rsrq": rsrq_2_db(payload_rx['ueMeasurement']['rsrq'])
         }
         neighborCells.append(info_neighbor)
         # neighbor_field = {'neighborCells': neighborCells}
@@ -98,6 +125,44 @@ def parse_kafka_topics_from_settings(tmp_kafka_topics):
         kafka_topics.add(topic)
 
     return kafka_topics
+
+
+# function used to update the ul and dl list with throughput information
+def update_thr(ul_list, dl_list, ue_id, dl, ul):
+    found = False
+
+    # -----
+    # DL
+    for i in range(0, len(dl_list)):
+        if dl_list[i]['id'] == ue_id:
+            dl_list[i]['count'] = dl_list[i]['count'] + 1
+            dl_list[i]['thr'] = dl_list[i]['thr'] + dl
+            found = True
+    if found is False:
+        tmp = {
+            'id': ue_id,
+            'thr': dl,
+            'count': 1
+        }
+        dl_list.append(tmp)
+
+    found = False
+
+    # -----
+    # UL
+    for i in range(0, len(ul_list)):
+        if ul_list[i]['id'] == ue_id:
+            ul_list[i]['count'] = ul_list[i]['count'] + 1
+            ul_list[i]['thr'] = ul_list[i]['thr'] + ul
+            found = True
+    if found is False:
+        tmp = {
+            'id': ue_id,
+            'thr': ul,
+            'count': 1
+        }
+        ul_list.append(tmp)
+    return dl_list, ul_list
 
 
 def run(settings, in_queue):
@@ -170,8 +235,6 @@ def run(settings, in_queue):
         "ues": []
     }
 
-    msg_start_152 = False
-    msg_start_153 = False
     neighbour_cells_152 = None
     neighbor_cells_153 = None
 
@@ -179,6 +242,8 @@ def run(settings, in_queue):
     ue_id_serv153 = list()
     other152_ues = list()
     other153_ues = list()
+    ue_dl_thr = list()
+    ue_ul_thr = list()
 
     accum_counter = 15
 
@@ -208,30 +273,26 @@ def run(settings, in_queue):
                     # logging.debug("Received on KAFKA:\n{msg}".format(msg=payload))
                     if payload['type'] == 'UE_MEASUREMENT':
                         # nats_queue.put(payload)
-                        print("At [{}] received msg type [{}] that ue [{}] sees serving cell [{}] and neighbour "
+                        print("At [{}] received msg type [{}] that ue [{}] sees cell [{}] and Serving "
                               "cell [{}]".format(datetime.datetime.fromtimestamp(payload['timestamp'] // 1000000000),
                                                  payload['type'],
-                                                 payload['ueMeasurement']['cellId'],
                                                  payload['ueMeasurement']['ueRicId'],
+                                                 payload['ueMeasurement']['cellId'],
                                                  payload['ueMeasurement']['ueCellId'])
                               )
                         # ------------------------------------------------------------------------
                         # create json to TX for Cell 152
                         if payload['ueMeasurement']['cellId'] == 'Cell152':
-                            if msg_start_152 is False:
-                                default_json_152['sTime'] = payload['timestamp'] // 1000000000
-                                msg_start_152 = True
-                                default_json_152, neighbour_cells_152, ue_id_serv152, other152_ues = \
-                                    add_measurement_to_json(default_json_152, payload, ue_id_serv152, other152_ues,
-                                                            pci_152, pci_153)
+                            default_json_152['sTime'] = payload['timestamp'] // 1000000000
+                            default_json_152, neighbour_cells_152, ue_id_serv152, other152_ues = \
+                                add_measurement_to_json(default_json_152, payload, ue_id_serv152, other152_ues,
+                                                        pci_152, pci_153)
 
                         if payload['ueMeasurement']['cellId'] == 'Cell153':
-                            if msg_start_153 is False:
-                                default_json_153['sTime'] = payload['timestamp'] // 1000000000
-                                msg_start_153 = True
-                                default_json_153, neighbor_cells_153, ue_id_serv153, other153_ues = \
-                                    add_measurement_to_json(default_json_153, payload, ue_id_serv153, other153_ues,
-                                                            pci_152, pci_153)
+                            default_json_153['sTime'] = payload['timestamp'] // 1000000000
+                            default_json_153, neighbor_cells_153, ue_id_serv153, other153_ues = \
+                                add_measurement_to_json(default_json_153, payload, ue_id_serv153, other153_ues,
+                                                        pci_152, pci_153)
 
                         if neighbour_cells_152 is not None:
                             if len(neighbour_cells_152) > 0:        # todo: could be  done better
@@ -271,15 +332,18 @@ def run(settings, in_queue):
                                                                'ERROR')
 
                     if payload['type'] == 'THROUGHPUT_REPORT':
-                        print("At [{time}] received msg type [{type}] that ue [{ue}] sees serving cell [{cell}] "
-                              "DL THR [{dlThroughput}], UL THR [{ulThroughput}]".format(
-                              time=datetime.datetime.fromtimestamp(payload['timestamp'] // 1000000000),
-                              type=payload['type'],
-                              cell=payload['throughputReport']['cellId'],
-                              ue=payload['throughputReport']['ueRicId'],
-                              dlThroughput=payload['throughputReport']['dlThroughput'],
-                              ulThroughput=payload['throughputReport']['ulThroughput'])
+                        print("At [{}] received msg type [{}] that ue [{}] sees serving cell [{}] DL THR [{}], "
+                              "UL THR [{}]".format(datetime.datetime.fromtimestamp(payload['timestamp'] // 1000000000),
+                                                   payload['type'],
+                                                   payload['throughputReport']['cellId'],
+                                                   payload['throughputReport']['ueRicId'],
+                                                   payload['throughputReport']['dlThroughput'],
+                                                   payload['throughputReport']['ulThroughput'])
                               )
+                        ue_id = int(payload['throughputReport']['ueRicId'].split('_')[1])
+                        dl = float(payload['throughputReport']['dlThroughput'])
+                        ul = float(payload['throughputReport']['ulThroughput'])
+                        ue_dl_thr, ue_ul_thr = update_thr(ue_dl_thr, ue_ul_thr, ue_id, dl, ul)
 
                     if payload['type'] == 'BLER_REPORT':
                         print("At [{time}] received msg type [{type}] that ue [{ue}] sees serving cell [{cell}] "
@@ -309,7 +373,71 @@ def run(settings, in_queue):
             print('-----------------------------------')
             print('-----------------------------------')
             print('List 152: served {}, not served {}'.format(ue_id_serv152, other152_ues))
+            # ---------
+            # update DL THR
+            for ue1 in ue_id_serv152:
+                for ue2 in ue_dl_thr:
+                    if ue2['id'] == ue1:
+                        found = False
+                        for idx in range(0, len(default_json_152['ues'])):
+                            if default_json_152['ues'][idx]['rnti'] == ue1:
+                                found = True
+                                default_json_152['ues'][idx]['dlThroughput'] = ue2['thr']/ue2['count']
+                        if found is False:
+                            print('UE {} not found in Cell152 during dl thr update'.format(ue1))
+                            with settings.lock:
+                                if settings.log_level >= 10:
+                                    settings.print_log('UE {} not found in Cell152 during dl thr update'.format(ue1),
+                                                       'ERROR')
+                #
+                # Update UL THR
+                for ue2 in ue_ul_thr:
+                    if ue2['id'] == ue1:
+                        found = False
+                        for idx in range(0, len(default_json_152['ues'])):
+                            if default_json_152['ues'][idx]['rnti'] == ue1:
+                                found = True
+                                default_json_152['ues'][idx]['ulThroughput'] = ue2['thr'] / ue2['count']
+                        if found is False:
+                            print('UE {} not found in Cell152 during ul thr update'.format(ue1))
+                            with settings.lock:
+                                if settings.log_level >= 10:
+                                    settings.print_log('UE {} not found in Cell152 during ul thr update'.format(ue1),
+                                                       'ERROR')
+
             print('List 153: served {}, not served {}'.format(ue_id_serv153, other153_ues))
+            for ue1 in ue_id_serv153:
+                # ---------------------
+                # Update DL THR
+                for ue2 in ue_dl_thr:
+                    if ue2['id'] == ue1:
+                        found = False
+                        for idx in range(0, len(default_json_153['ues'])):
+                            if default_json_153['ues'][idx]['rnti'] == ue1:
+                                found = True
+                                default_json_153['ues'][idx]['dlThroughput'] = ue2['thr']/ue2['count']
+                        if found is False:
+                            print('UE {} not found in Cell152 during dl thr update'.format(ue1))
+                            with settings.lock:
+                                if settings.log_level >= 10:
+                                    settings.print_log('UE {} not found in Cell152 during dl thr update'.format(ue1),
+                                                       'ERROR')
+                # -------------
+                # Update UL THR
+                for ue2 in ue_ul_thr:
+                    if ue2['id'] == ue1:
+                        found = False
+                        for idx in range(0, len(default_json_153['ues'])):
+                            if default_json_153['ues'][idx]['rnti'] == ue1:
+                                found = True
+                                default_json_153['ues'][idx]['ulThroughput'] = ue2['thr'] / ue2['count']
+                        if found is False:
+                            print('UE {} not found in Cell152 during ul thr update'.format(ue1))
+                            with settings.lock:
+                                if settings.log_level >= 10:
+                                    settings.print_log('UE {} not found in Cell152 during ul thr update'.format(ue1),
+                                                       'ERROR')
+
             # Check - status of nodes before transmit information
             with settings.lock:
                 if settings.pci_152_status == 'ON':
@@ -323,12 +451,16 @@ def run(settings, in_queue):
 
             if cell_152_on is True:
                 try:
+                    time_now = time.time()
+                    default_json_152['eTime'] = int(time_now)
                     validate(default_json_152, json_schema)
                     tx_info.get_instance().tx_to_external_platform(default_json_152)
                 except SchemaError as ex:
                     print("Schema for cell 152 is Not valid:\n{}".format(ex))
             if cell_153_on is True:
                 try:
+                    time_now = time.time()
+                    default_json_153['eTime'] = int(time_now)
                     validate(default_json_153, json_schema)
                     tx_info.get_instance().tx_to_external_platform(default_json_153)
                 except SchemaError as ex:
@@ -380,3 +512,7 @@ def run(settings, in_queue):
             ue_id_serv153 = list()
             other152_ues = list()
             other153_ues = list()
+
+            ue_dl_thr = list()
+            ue_ul_thr = list()
+

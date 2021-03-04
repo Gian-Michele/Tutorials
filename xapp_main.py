@@ -8,7 +8,7 @@ import processor
 import kafka_listener
 import periodic_publisher
 import atexit
-
+import action_taker
 # add by Gian Michele
 # import configparser
 import rest_api_interface
@@ -199,8 +199,18 @@ if __name__ == '__main__':
                                                    '{}'.format(json.dumps(msg_new, indent=2)), 'INFO')
 
                     elif pkt['type'] == 'ho_command':
-                        print('Received HO Command')
+                        ue_id = pkt['ueID']
+                        source_cell = pkt['source_cell']
+                        destination_cell = pkt['destination_cell']
+                        print('Received HO Command for UE {}, from Cell {} to Cell {}'.format(ue_id, source_cell,
+                                                                                              destination_cell))
                         # todo - Here code for handle Handover
+                        handover_list = [
+                            {'ueIdx': 'UE_'+str(ue_id), 'targetCell': 'Cell'+str(destination_cell),
+                             'sourceCell': 'Cell'+str(source_cell)}
+                        ]
+                        action_taker.trigger_handover(settings, handover_list)
+
 
                 else:
                     print('unknown message')

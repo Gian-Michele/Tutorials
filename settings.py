@@ -20,6 +20,10 @@ class Settings:
 
         self.lock = Lock()
         self.configuration = xapp_configuration.configuration
+        # add by TIM to update NATS Information
+
+        self.nats_url = self.configuration['config']['NATS_URL']
+        self.nats_topic = self.configuration['config']['DRAX_COMMAND_TOPIC']
 
         # Logging file configuration
         self.log_obj = logging.getLogger('xapp-log')

@@ -73,5 +73,13 @@ if __name__ == '__main__':
         rx_info.get_instance().stop_recv()
         print('Time expired - No messages arrived')
 
+    msg_1 = {
+        'type': 'ho_command',
+        'ueID': 2579,
+        'source_cell': 153,
+        'destination_cell': 152
+    }
+
+    nats_interface_static.tx_to_external_platform(msg_1, topic, 1)
 
 
