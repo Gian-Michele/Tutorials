@@ -36,7 +36,7 @@ def trigger_handover(settings, handover_list):
         peer_msg = create_handover_command_message(item['ueIdx'], item['targetCell'], item['sourceCell'])
 
         # Send the message to NATS
-        # TODO fix settinsg reading
+        # TODO fix settings reading
         with settings.lock:
             nats_url = settings.nats_url
             print("nats_url: {}".format(nats_url))

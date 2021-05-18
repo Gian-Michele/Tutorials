@@ -8,8 +8,8 @@ from datetime import datetime
 
 class Settings:
     def __init__(self):
-        self.pci_152 = 0    # default value
-        self.pci_153 = 1    # default value
+        self.pci_152 = 1    # default value
+        self.pci_153 = 2    # default value
         self.pci_152_status = 'OFF'    # ON/OFF default value OFF
         self.pci_153_status = 'OFF'    # ON/OFF default value OFF
         date = str(datetime.now())

@@ -6,6 +6,10 @@ import time
 from controller.nats_interface import InstructiveInterface
 from jsonschema import validate, SchemaError
 
+# global information on the user list
+global user_dict
+user_dict = dict()
+
 
 def rsrp_2_dbm(val):
     return -140 + val
@@ -273,13 +277,18 @@ def run(settings, in_queue):
                     # logging.debug("Received on KAFKA:\n{msg}".format(msg=payload))
                     if payload['type'] == 'UE_MEASUREMENT':
                         # nats_queue.put(payload)
-                        print("At [{}] received msg type [{}] that ue [{}] sees cell [{}] and Serving "
+                        print("At [{}] received msg type [{}] that ue [{}] - dRaxId [{}] sees cell [{}] and Serving "
                               "cell [{}]".format(datetime.datetime.fromtimestamp(payload['timestamp'] // 1000000000),
                                                  payload['type'],
                                                  payload['ueMeasurement']['ueRicId'],
+                                                 payload['ueMeasurement']['ueDraxId'],
                                                  payload['ueMeasurement']['cellId'],
                                                  payload['ueMeasurement']['ueCellId'])
                               )
+
+                        # update user_list
+                        key = str(payload['ueMeasurement']['ueRicId'])
+                        user_dict[key] = payload['ueMeasurement']['ueDraxId']
                         # ------------------------------------------------------------------------
                         # create json to TX for Cell 152
                         if payload['ueMeasurement']['cellId'] == 'Cell152':
@@ -322,8 +331,9 @@ def run(settings, in_queue):
                                     found = False
                                     for i in range(0, len(default_json_152['ues'])):
                                         if default_json_152['ues'][i]['rnti'] == ue_id:
-                                            if len(default_json_152['ues'][i]['neighbourCells']) == 0:
-                                                default_json_152['ues'][i]['neighbourCells'] = neighbor_cells_153
+                                            if len(default_json_152['ues'][i]['neighborCells']) == 0:
+                                                default_json_152['ues'][i]['neighborCells'] = neighbor_cells_153
+                                                default_json_152['ues'][i]['numNeighborDescriptors'] = 1
                                             found = True
 
                                     if found is False:

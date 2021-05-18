@@ -164,8 +164,8 @@ if __name__ == '__main__':
                         if pkt['pci'] == pci_153:
                             cell_id = 153
                         result = rest_api_interface.get_cell_status(cell_id)
-                        topic_list_2_ric = list()
-                        topic_list_2_ric.append('acceleran_2_ric')
+                        # topic_list_2_ric = list()
+                        # topic_list_2_ric.append('accelleran_2_ric')
                         if result is True:
                             print('-------------')
                             print('Cell {} is ON-AIR'.format(cell_id))
@@ -205,12 +205,19 @@ if __name__ == '__main__':
                         print('Received HO Command for UE {}, from Cell {} to Cell {}'.format(ue_id, source_cell,
                                                                                               destination_cell))
                         # todo - Here code for handle Handover
-                        handover_list = [
-                            {'ueIdx': 'UE_'+str(ue_id), 'targetCell': 'Cell'+str(destination_cell),
-                             'sourceCell': 'Cell'+str(source_cell)}
-                        ]
-                        action_taker.trigger_handover(settings, handover_list)
 
+                        from kafka_listener import user_dict
+                        key_val = 'UE_'+str(ue_id)
+                        if key_val in user_dict.keys():
+                            ue_dRax_id = user_dict[key_val]
+                            print('dRax ID for UE_{} is: {} '.format(ue_id, ue_dRax_id))
+                            handover_list = [
+                                {'ueIdx': ue_dRax_id, 'targetCell': 'Cell'+str(destination_cell),
+                                 'sourceCell': 'Cell'+str(source_cell)}
+                            ]
+                            action_taker.trigger_handover(settings, handover_list)
+                        else:
+                            print('HO cannot be forced')
 
                 else:
                     print('unknown message')
