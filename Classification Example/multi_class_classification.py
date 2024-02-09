@@ -42,7 +42,7 @@ def generic_tf_model(X_train, X_test, y_train, y_test, seed: int=None) -> tf.ker
     tf_model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=["accuracy"])
     # --------------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------------
-    tf_history = tf_model.fit(X_train,y_train, epochs=30, verbose=0)
+    tf_history = tf_model.fit(X_train,y_train, epochs=30)
     print('Generic Model training result:')
     loss, accuracy = tf_model.evaluate(X_test,y_test)
     print(f"Loss is {loss}, accuracy is {accuracy}")
@@ -81,7 +81,7 @@ def generic_tf_model_one_hot(X_train, X_test, y_train, y_test, seed: int=None) -
     tf_model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=["accuracy"])
     # --------------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------------
-    tf_history = tf_model.fit(X_train,tf.one_hot(y_train, depth=10), epochs=30, verbose=0)
+    tf_history = tf_model.fit(X_train,tf.one_hot(y_train, depth=10), epochs=30)
     print('Generic Model training result:')
     loss, accuracy = tf_model.evaluate(X_test,tf.one_hot(y_test, depth=10))
     print(f"Loss is {loss}, accuracy is {accuracy}")
