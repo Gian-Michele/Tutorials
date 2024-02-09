@@ -7,6 +7,10 @@ from os import getcwd
 
 show_figure = True
 
+def normalization(data):
+    max = data.max()
+    data = data/max
+    return data
 
 ## Generic function for tensor flow generation model for multiclass classification (respect binary calssification loss function is CategoricalCrossenstropy)
 def generic_tf_model(X_train, X_test, y_train, y_test, seed: int=None) -> tf.keras.Model:
@@ -25,8 +29,8 @@ def generic_tf_model(X_train, X_test, y_train, y_test, seed: int=None) -> tf.ker
     # Try introducing non linearity in model using relu activation fuction: (number of layer and neuron can be increased)
     tf_model = tf.keras.Sequential([
         tf.keras.layers.Flatten(input_shape=(28,28)),
-        tf.keras.layers.Dense(4, activation="relu"),      # typical activation function used is Relu
-        tf.keras.layers.Dense(4, activation="relu"),
+        tf.keras.layers.Dense(100, activation="relu"),      # typical activation function used is Relu
+        tf.keras.layers.Dense(20, activation="relu"),
         tf.keras.layers.Dense(10, activation=tf.keras.activations.softmax)      # the output has to be softmax for 10 categry 
        
     ])
@@ -38,7 +42,7 @@ def generic_tf_model(X_train, X_test, y_train, y_test, seed: int=None) -> tf.ker
     tf_model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=["accuracy"])
     # --------------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------------
-    tf_history = tf_model.fit(X_train,y_train, epochs=10)
+    tf_history = tf_model.fit(X_train,y_train, epochs=30, verbose=0)
     print('Generic Model training result:')
     loss, accuracy = tf_model.evaluate(X_test,y_test)
     print(f"Loss is {loss}, accuracy is {accuracy}")
@@ -64,8 +68,8 @@ def generic_tf_model_one_hot(X_train, X_test, y_train, y_test, seed: int=None) -
     # Try introducing non linearity in model using relu activation fuction: (number of layer and neuron can be increased)
     tf_model = tf.keras.Sequential([
         tf.keras.layers.Flatten(input_shape=(28,28)),
-        tf.keras.layers.Dense(4, activation="relu"),      # typical activation function used is Relu
-        tf.keras.layers.Dense(4, activation="relu"),
+        tf.keras.layers.Dense(100, activation="relu"),      # typical activation function used is Relu
+        tf.keras.layers.Dense(20, activation="relu"),
         tf.keras.layers.Dense(10, activation=tf.keras.activations.softmax)      # the output has to be softmax for 10 categry 
        
     ])
@@ -77,16 +81,14 @@ def generic_tf_model_one_hot(X_train, X_test, y_train, y_test, seed: int=None) -
     tf_model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=["accuracy"])
     # --------------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------------
-    tf_history = tf_model.fit(X_train,tf.one_hot(y_train, depth=10), epochs=10)
+    tf_history = tf_model.fit(X_train,tf.one_hot(y_train, depth=10), epochs=30, verbose=0)
     print('Generic Model training result:')
-    loss, accuracy = tf_model.evaluate(X_test,tf.one_hot(y_train, depth=10))
+    loss, accuracy = tf_model.evaluate(X_test,tf.one_hot(y_test, depth=10))
     print(f"Loss is {loss}, accuracy is {accuracy}")
     pd.DataFrame(tf_history.history).plot()
     plt.grid()
     plt.title('training history')
     return tf_model
-
-
 
 # function to plot a list of data and labels randomly selected from the dataset
 def plot_images(data, labels):
@@ -121,7 +123,9 @@ if __name__ == '__main__':
     class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
     
     # need to transform the 28x28 images in flated data
-    # tf_model_1 = generic_tf_model(train_data, test_data, train_labels, test_labels, 42)
+    train_data = normalization(train_data)
+    test_data = normalization(test_data)
+    tf_model_1 = generic_tf_model(train_data, test_data, train_labels, test_labels, 42)
     tf_model_2 = generic_tf_model_one_hot(train_data, test_data, train_labels, test_labels, 42)
     if show_figure is True:
         plt.show()
