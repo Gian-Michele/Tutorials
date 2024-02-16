@@ -3,11 +3,11 @@
 In order to add a Node as agent go to > "Gestisci Jenkins" > "Gestisci Nodi e Cloud" in order to see the following interface:
 
 
-![jenkins-nodes.png](jenkins-nodes.png "list of jenkins nodes")
+![jenkins-nodes.png](images/jenkins-nodes.png "list of jenkins nodes")
 
 The table show the status of Master and agent nodes (agent node "agent2" is not in line)
 
-The "+ Nuovo Node" allows to add a new node
+The "+ New Elements" allows to add a new node
 
 When you create a node you need to check:
 
@@ -18,7 +18,7 @@ When you create a node you need to check:
 
 Once create a node pressing on the Name of the node like "agent1" you could see information on the status of the node, statistic or logs as below:
 
-![jenkins-agent1.png](jenkins-agent1.png "agent information report")
+![jenkins-agent1.png](images/jenkins-agent1.png "agent information report")
 
 In the image above Warning signal that the connection is not secure in case of Man in the middle strategy
 
@@ -30,7 +30,7 @@ You need to go in the host that handle your agent and create in the folder selec
     mkdir -p .ssh
 
 
-then you need tocreate the known_hosts file using command:
+then you need to create the known_hosts file using command:
 
 
     ssh-keyscan -H "host name" >> .ssh/known_hosts
@@ -88,11 +88,11 @@ hhY67872W5v6uqZNXU2UrsPnh0PjHJyFW5c2sGy9XStbO6QDkZ4=
 
 The rsa key has to be copied as above in the jenkins box "Aggiungi" show in figure below
 
-![jenkins-ssh-key.png](jenkins-ssh-key.png "copy rsa ssh-key")
+![jenkins-ssh-key.png](images/jenkins-ssh-key.png "copy rsa ssh-key")
 
 
 
-In order to remove the warning: **[SSH] WARNING: SSH Host Keys are not being verified. Man-in-the-middle attacks may be possible against this connection.** It is need add a "key verification stragegy" in the node configuration section
+In order to remove the warning: **[SSH] WARNING: SSH Host Keys are not being verified. Man-in-the-middle attacks may be possible against this connection.** It is need add a "key verification strategy" in the node configuration section
 
 In order to find the correct key in the machine where run jenkins:
 
@@ -109,8 +109,11 @@ you will obtain the .pub key of the machine, something like:
 
 |1|kB2RCNxc3AGbEevUZEsdaw7Uqspo=|Wte2YWbKlje+b+vdCLB6+/eHDp4= **ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEQ3I8N2uwkXXyt8FHhfo3JD5NNtq2kdleteweT+Wey0MhabVtBqZy1q5DWTRfvWaZwNP5VkUnkDpaVk939QTDXuQ=**
 
-only the bold part (after enchription algorithm) needs to be copied
+only the bold part (after encryption algorithm) needs to be copied
 
-step4) Selecting the **"Maually provided key Verification Strategy"** and copy the string above in bold in the section showed in the figure:
+* step4) Selecting the **"Manually provided key Verification Strategy"** and copy the string above in bold in the section showed in the figure:
 
-![ssh-key-strategy.png](ssh-key-strategy.png)
+![ssh-key-strategy.png](images/ssh-key-strategy.png)
+
+
+In the next section a description of how [integrate with gitlab](integration_with_gitlab.md)
