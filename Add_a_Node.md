@@ -117,3 +117,5 @@ only the bold part (after encryption algorithm) needs to be copied
 
 
 In the next section a description of how [integrate with gitlab](integration_with_gitlab.md)
+
+or you can look how create a [pipeline](Pipelines.md)
