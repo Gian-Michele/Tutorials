@@ -6,6 +6,9 @@ from sklearn.datasets import make_circles
 import matplotlib.pyplot as plt
 from os import getcwd
 
+import itertools
+from sklearn.metrics import confusion_matrix
+
 show_figure = True
 
 ## Generic function for tensor flow generation model for binary classification
@@ -77,18 +80,15 @@ def plot_decision_boundary(model :tf.keras.Model, X, y):
     plt.ylim(yy.min(), yy.max())
 
 
-def castom_confusion_matrix(y_test, y_preds):
+def custom_confusion_matrix(y_true, y_preds, classes=None, model_name:str=None, figsize =(10, 10), text_size=15):
     """ Provide a Confusion matrix starting from the y label original and y label predicted """
     # Note: The following confusion matrix code is a remix of Scikit-Learn's
     # plot_confusion_matrix function - https://scikit-learn.org/stable/modules/generated/sklearn.metrics.plot_confusion_matrix.html
     # and Made with ML's introductory notebook - https://github.com/GokuMohandas/MadeWithML/blob/main/notebooks/08_Neural_Networks.ipynb
-    import itertools
-    from sklearn.metrics import confusion_matrix
-
-    figsize = (10, 10)
+    
 
     # Create the confusion matrix ( y_preds has to be turn from proability to 0 and 1)
-    cm = confusion_matrix(y_test, tf.round(y_preds))
+    cm = confusion_matrix(y_true, tf.round(y_preds))
     cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis] # normalize it
     n_classes = cm.shape[0]
 
@@ -98,10 +98,7 @@ def castom_confusion_matrix(y_test, y_preds):
     cax = ax.matshow(cm, cmap=plt.cm.Blues) # https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.axes.Axes.matshow.html
     fig.colorbar(cax)
 
-    # Create classes
-    classes = False
-
-    if classes:
+    if classes is not None:
         labels = classes
     else:
         labels = np.arange(cm.shape[0])
@@ -120,9 +117,9 @@ def castom_confusion_matrix(y_test, y_preds):
     ax.xaxis.tick_bottom()
 
     # Adjust label size
-    ax.xaxis.label.set_size(20)
-    ax.yaxis.label.set_size(20)
-    ax.title.set_size(20)
+    ax.xaxis.label.set_size(text_size)
+    ax.yaxis.label.set_size(text_size)
+    ax.title.set_size(text_size)
 
     # Set threshold for different colors
     threshold = (cm.max() + cm.min()) / 2.
@@ -132,7 +129,10 @@ def castom_confusion_matrix(y_test, y_preds):
         plt.text(j, i, f"{cm[i, j]} ({cm_norm[i, j]*100:.1f}%)",
             horizontalalignment="center",
             color="white" if cm[i, j] > threshold else "black",
-            size=15)
+            size=text_size)
+    
+    if model_name is not None:
+        plt.title(f'MODEL NAME: {model_name}')
 
 #-------------------------------------------------------
 # Start  Things
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     from sklearn.metrics import confusion_matrix
     y_predict = model_2.predict(X_test)
     print(f"label y to find: {y[:5]}, predicted label y_predict: {y_predict[:5]}")
-    castom_confusion_matrix(y_test, y_predict)
+    custom_confusion_matrix(y_test, y_predict)
 
     if show_figure is True:
         plt.show()
