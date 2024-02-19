@@ -10,9 +10,9 @@ SSH Keys generation on the controller:
 
 This will create inside the user's home a hidden folder named .ssh containing 2 files: id_rsa (the private key) and id_rsa.pub (the public key).
 
-The content of public key (id_rsa.pub) must be pasted into the file */root/.ssh/authorized_keys* in each eNB in order to allow the controller to log in as root inside that machine (to shutdown the machine) without password prompting.
+The content of public key (id_rsa.pub) must be pasted into the file */root/.ssh/authorized_keys* in each NODE in order to allow the controller to log in as root inside that machine (to shutdown the machine) without password prompting.
 
-If the file authorized_keys does not exist on the eNB, create it (**as root using command sudo su**) with command:
+If the file authorized_keys does not exist on the NODE, create it (**as root using command sudo su**) with command:
 	
 	touch /root/.ssh/authorized_keys
 	chmod 600 /root/.ssh/authorized_keys
