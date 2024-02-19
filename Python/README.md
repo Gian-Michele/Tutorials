@@ -1,7 +1,7 @@
 # Python 
 This contain some useful information on Python and how set venv for different project
 
-# CONDA 
+### CONDA 
 
 Some client application can be launched on python3.7 other could need higher version of python, because of that can be useful dowload a system to handle virtula environment like anaconda. The last installer can be found in: [anaconda last version](https://www.anaconda.com/products/distribution)
 The installation of Anaconda can be found in [installation_link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/linux.html#)
