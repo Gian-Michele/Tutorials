@@ -9,3 +9,8 @@ Below a list of interesting link:
 
 # youtube links:
  - A video with a good description of how gradient descent works [youtube-video](https://www.youtube.com/watch?v=IHZwWFHWa-w)
+
+
+# Topic:
+- Classification Problem
+- Vision Problem with [CNN](ConvNeuralNetwork_and_ComputerVision/README.md) 
