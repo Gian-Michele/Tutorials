@@ -55,6 +55,10 @@ where -net the destination subnetwork  and **gw** is the IP address  *x1.y1.z1.k
 
 **route del -net** command can be used to remove a static route
 
+to add a default getaway the command is
+
+	sudo route add default gw <ip address>
+
 The GW x1.y1.z1.k1 has to be configured to pass the data through the interfaces using the script below that allow to pass the packet to the WANIF an LANIF interfaces:
 
 ```bash
@@ -76,10 +80,12 @@ $IPTABLES -X
 
 # enable masquerading to allow LAN internet access
 echo 'Enabling IP Masquerading and other rules...'
+# the MASQUERADE could be removed to facilitate sctp protocl setup
 $IPTABLES -t nat -A POSTROUTING -o $LANIF -j MASQUERADE
 $IPTABLES -A FORWARD -i $LANIF -o $WANIF -m state --state RELATED,ESTABLISHED -j ACCEPT
 $IPTABLES -A FORWARD -i $WANIF -o $LANIF -j ACCEPT
 
+# the MASQUERADE could be removed to facilitate sctp protocl setup
 $IPTABLES -t nat -A POSTROUTING -o $WANIF -j MASQUERADE
 $IPTABLES -A FORWARD -i $WANIF -o $LANIF -m state --state RELATED,ESTABLISHED -j ACCEPT
 $IPTABLES -A FORWARD -i $LANIF -o $WANIF -j ACCEPT
