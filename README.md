@@ -16,5 +16,6 @@ This git project contains a list of useful information on several topics for a d
 7. Interesting tutorial on [Python](Python/README.md)
 
 ### other link
-todo...
+interesting links:
+- [K8s configurations](https://medium.com/@dskydragon/11-kubernetes-deployment-configs-you-should-know-in-2024-1126740926f0?source=email-0b3ea6db1a47-1710121197986-digest.reader-9bad45fbe16d-1126740926f0----0-98------------------d161ea18_fe0d_45f3_b0cc_7ae40e58b231-1)
 
