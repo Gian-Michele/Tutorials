@@ -8,6 +8,7 @@ This git project contains a list of useful information on several topics for a d
 
 3. Information on some useful commands in [Docker](Docker-K8s/Docker.md)
 4. Information on k8s, this [link on Medium](https://overcast.blog/13-kubernetes-configurations-you-should-know-in-2024-54eec72f307e) provider an overview on K8s best practis, other info provider by me below:
+    - Some useful information on starting using k8s can be found [here](Docker-K8s/forDummy.md)
     - Some useful commands: [K8s useful command](Docker-K8s/K8s_useful_command.md)
     - Service-Accout usage in K8s: [exmple of Cluster Admin](Docker-K8s/cluster-admin.md)
     - Some useful command in [helm](Docker-K8s/helm.md)
