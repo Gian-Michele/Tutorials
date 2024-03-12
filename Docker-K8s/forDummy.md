@@ -58,7 +58,6 @@ else
     sudo mkdir -p -m 755 $dirname
 fi
 
-#cd /root && rm -rf Helm && mkdir Helm && cd Helm
 tar -xvf helm-v${HELMV}-linux-amd64.tar.gz
 sudo mv linux-amd64/helm /usr/local/bin/helm
 
