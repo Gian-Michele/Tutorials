@@ -49,6 +49,7 @@ if [ ! -e helm-v${HELMV}-linux-amd64.tar.gz ]; then
    wget https://get.helm.sh/helm-v${HELMV}-linux-amd64.tar.gz
 fi
 
+# or a directory in $PATH
 dirname='/user/local/bin/helm'
 
 if [ -d "$dirname" ]; then
@@ -72,7 +73,7 @@ then is needed copy the kubeconfig.yaml configuration file in the folder ./kube 
 
     mkdir .kube
     mv kubeconfig.yaml ./kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    chown 600 $HOME/.kube/config
     
 Now to set autocmpete use:
 
