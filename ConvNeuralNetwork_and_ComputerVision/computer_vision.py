@@ -10,26 +10,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import random
+import pandas as pd
 
 download_dataset = False
-gen_model = False
+gen_model = True
 
 
 def gen_cnn_model(train_data, valid_data):
     # Create a CNN model (same as Tiny VGG - https://poloclub.github.io/cnn-explainer/)
     model_cnn = tf.keras.models.Sequential([
-    tf.keras.layers.Conv2D(filters=10, 
-                           kernel_size=3,  # can also be (3, 3)
-                           activation="relu", 
-                           input_shape=(224, 224, 3)),     # first layer specifies input shape (height, width, colour channels)
-    tf.keras.layers.Conv2D(30, 3, activation="relu"),
-    tf.keras.layers.MaxPool2D(pool_size=2,      # pool_size can also be (2, 2)
-                              padding="valid"), # padding can also be 'same'
-    tf.keras.layers.Conv2D(20, 3, activation="relu"),
-    tf.keras.layers.Conv2D(10, 3, activation="relu"), # activation='relu' == tf.keras.layers.Activations(tf.nn.relu)
-    tf.keras.layers.MaxPool2D(2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(1, activation="sigmoid") # binary activation output
+        tf.keras.layers.Conv2D(filters=10,              # Number of Filter per Layer will pass throught the immage
+                               kernel_size=3,           # Measn (3, 3), is the dimension of the filter (typcal 3, 5, 7), larger value idefify larger thind
+                               activation="relu", 
+                               strides=1,               # means (1, 1) is default value, is the step of the filter in the image in the two image direction.
+                               input_shape=(224, 224, 3)),     # first layer specifies input shape (height, width, colour channels)
+        tf.keras.layers.Conv2D(30, 3, activation="relu"),
+        tf.keras.layers.MaxPool2D(pool_size=2,          # pool_size can also be (2, 2)
+                                padding="valid"),       # padding can also be 'same' in case to maintain the same output inserting zeros, in case of valid the outpu is compressed
+                                                        # using "valid" we lose the edge of the image
+        tf.keras.layers.Conv2D(20, 3, activation="relu"),
+        tf.keras.layers.Conv2D(10, 3, activation="relu"), # activation='relu' == tf.keras.layers.Activations(tf.nn.relu)
+        tf.keras.layers.MaxPool2D(2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(1, activation="sigmoid") # binary activation output
     ])
 
     # Compile the model using typical configuration for binary classification
@@ -44,6 +47,8 @@ def gen_cnn_model(train_data, valid_data):
                             validation_data=valid_data,
                             validation_steps=len(valid_data))
     
+    # visualization of the training process
+    plot_loss(history=history_cnn)
     if path_where_save is not None:
         model_cnn.save(path_where_save+'/cnn_model')
     
@@ -66,6 +71,28 @@ def view_random_image(target_dir: str, target_class: str):
 
   return img
 
+def plot_loss(history):
+    """ Return Loss curves
+    """
+    loss = history.hystory["loss"]
+    val_loss = history.hystory["val_loss"]
+    accuracy = history.hystory["accuracy"]
+    val_accuracy = history.hystory["val_accuracy"]
+    epochs = range(len( history.hystory["loss"]))
+    # plot loss
+    plt.plot(epochs, loss, label="training_loss")
+    plt.plot(epochs, val_loss, label="val_loss")
+    plt.title("loss")
+    plt.xlabel("epochs")
+    plt.legend()
+
+    # plot loss
+    plt.figure()
+    plt.plot(epochs, accuracy, label="training_accuracy")
+    plt.plot(epochs, val_accuracy, label="val_accuracy")
+    plt.title("loss")
+    plt.xlabel("epochs")
+    plt.legend()
 
 
 #-------------------------------------------------------
@@ -133,7 +160,7 @@ if __name__ == '__main__':
                                                 class_mode="binary",    # type of problem we're working on
                                                 seed=42)
 
-    
+    # select to generate or load the model from the saved one
     if gen_model is True:
         cnn_model, model_history = gen_cnn_model(train_data, valid_data)
     else:
