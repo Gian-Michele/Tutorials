@@ -74,23 +74,24 @@ def view_random_image(target_dir: str, target_class: str):
 def plot_loss(history):
     """ Return Loss curves
     """
-    loss = history.hystory["loss"]
-    val_loss = history.hystory["val_loss"]
-    accuracy = history.hystory["accuracy"]
-    val_accuracy = history.hystory["val_accuracy"]
-    epochs = range(len( history.hystory["loss"]))
+    loss = history.history["loss"]
+    val_loss = history.history["val_loss"]
+    accuracy = history.history["accuracy"]
+    val_accuracy = history.history["val_accuracy"]
+    epochs = range(len( history.history["loss"]))
     # plot loss
+    plt.figure()
     plt.plot(epochs, loss, label="training_loss")
     plt.plot(epochs, val_loss, label="val_loss")
     plt.title("loss")
     plt.xlabel("epochs")
     plt.legend()
 
-    # plot loss
+    # plot accuracy
     plt.figure()
     plt.plot(epochs, accuracy, label="training_accuracy")
     plt.plot(epochs, val_accuracy, label="val_accuracy")
-    plt.title("loss")
+    plt.title("accuracy")
     plt.xlabel("epochs")
     plt.legend()
 
@@ -168,3 +169,5 @@ if __name__ == '__main__':
 
     #loss, accuracy = cnn_model.evaluate(train_data, valid_data)
     cnn_model.summary()
+
+    plt.show()
