@@ -12,6 +12,7 @@ This git project contains a list of useful information on several topics for a d
     - Some useful commands: [K8s useful command](Docker-K8s/K8s_useful_command.md)
     - Service-Accout usage in K8s: [exmple of Cluster Admin](Docker-K8s/cluster-admin.md)
     - Some useful command in [helm](Docker-K8s/helm.md)
+    - To sniff packet on K8s cluster [ksniff](Docker-K8s/k8s_capture.md) 
 5. Usage of [iperf](Generic-Linux/iperf.md)
 6. Usage of [ssh](Generic-Linux/ssh_and_switchoff.md)
 7. Interesting tutorial on [Python](Python/README.md)
