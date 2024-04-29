@@ -4,10 +4,10 @@ This tutorial contains a list of useful command using linux (ubuntu)
 
 ### sctp
 
-To verify the binded port in a system (include sctp port) the command to use is:
+To verify a bind port in a system (include sctp port) the command to use is:
 
     sudo netstat --sctp -tulpn
-    
+
 ### Disc memory
 
 To verify the memory on the disc use the command:
@@ -23,10 +23,10 @@ To verify the dimension of a folder
 In order to configure the interface in a ubuntu machine you have to setup the file **/etc/network/interfaces**. The two option are:
 
 - dhcp based interface configuration:
-    
+
         auto eth0
         iface eth0 inet dhcp
-    
+
 - static configuration:
 
         auto eth0
@@ -35,16 +35,16 @@ In order to configure the interface in a ubuntu machine you have to setup the fi
         netmask 255.255.248.0
         gateway 192.168.3.1
         dns-nameservers 192.168.3.3 192.168.3.4
-        
- 
+
+
  to update the configuration can be used the command:
- 
+
     sudo ifdown eth0 && sudo ifup eth0
- 
- or 
- 
+
+ or
+
     sudo systemctl restart networking
-    
+
 
 ### ping command
 
@@ -102,8 +102,3 @@ Alternative mode to allow packet forwording is using the command below:
 
     sudo sysctl net.ipv4.conf.all.forwarding=1
     sudo iptables -P FORWARD ACCEPT
-
-
-
-
-    

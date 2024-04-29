@@ -1,5 +1,5 @@
 # Harbor
-Harbor is a registy for container images. The https page of Harbor registry can be found in:
+Harbor is a registry for container images. The https page of Harbor registry can be found in:
 
 https://<harbor_ip_address>/harbor/projects
 
@@ -18,7 +18,7 @@ configure the http-proxy.conf file in /etc/systemd/system/docker.service.d/ as b
     Environment="HTTP_PROXY=http://localhost:3128"
     Environment="HTTPS_PROXY=http://localhost:3128"
     Environment="NO_PROXY=<harbor ip address>"
-    
+
 
 Create the folder /etc/docker/certs.d/harbor ip address<>/ where it needed to insert the certificate ca.crt
 

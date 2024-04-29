@@ -4,7 +4,7 @@ A pod with cluster admin privilege could have the role to decide when scale up/d
 Prometheus endpoins could be a pod to monitor to know the status of the system
 
 
-Additionaly is needed the token to connect to k8s with the role of cluster-admin. In order to do that the following acttion is neded:
+Additionally is needed the token to connect to k8s with the role of cluster-admin. In order to do that the following action is needed:
 
 # Option 1 to get the token for API Server usage
 
@@ -22,7 +22,7 @@ Additionaly is needed the token to connect to k8s with the role of cluster-admin
 
 	echo($TOKEN)
 
-- the printed token could be inserted in a secret as follow: 
+- the printed token could be inserted in a secret as follow:
 ```yaml
 apiVersion: v1
 stringData:
@@ -36,7 +36,7 @@ type: Opaque
 
 
 - now apply the secret using the command
-	
+
 	kubectl -n nrtric apply -f my-token-secret.yml
 
 - now the secret could be loaded in a pod deployment as a volume as in the deployment example below:
@@ -58,7 +58,7 @@ spec:
       labels:
         app: my-app
     spec:
-      serviceAccountName: admin-user-nrtric 
+      serviceAccountName: admin-user-nrtric
       containers:
        - name: pod-test
          image: pod-image:2.0.1
@@ -77,11 +77,11 @@ spec:
 
 # Option 2 to get token to API Server usage:
 
-As described in [https://kubernetes.io/docs/concepts/security/service-accounts/](https://kubernetes.io/docs/concepts/security/service-accounts/) the token as to be assigned using a service account directly in the deployment. The command to generate a service-accout is:
+As described in [https://kubernetes.io/docs/concepts/security/service-accounts/](https://kubernetes.io/docs/concepts/security/service-accounts/) the token as to be assigned using a service account directly in the deployment. The command to generate a service-account is:
 
 	kubectl apply -f admin-user.yaml
 
-where admin-user.yaml contains the description of the service accout:
+where admin-user.yaml contains the description of the service account:
 
 ```yaml
 apiVersion: v1
@@ -113,11 +113,11 @@ subjects:
   namespace: kube-system
 ```
 
-is used to create a service-account name admin-user that can be assigned at a pod looking the link: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) 
+is used to create a service-account name admin-user that can be assigned at a pod looking the link: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)
 
 Following this new option is k8s that provide the token in the file **/var/run/secrets/kubernetes.io/serviceaccount/token** with the permission defined in the service account
 
-the deployment neads of the service-account name and no more a secret needs to be passed as a volume. Look below the new deployment:
+the deployment needs of the service-account name and no more a secret needs to be passed as a volume. Look below the new deployment:
 
 
 ```yaml
@@ -137,11 +137,11 @@ spec:
       labels:
         app: my-app
     spec:
-      serviceAccountName: admin-user 
+      serviceAccountName: admin-user
       containers:
        - name: pod-test
          image: pod-image:2.0.1
          # Always or IfNotPresent
          imagePullPolicy: Always
-        
+
 ```

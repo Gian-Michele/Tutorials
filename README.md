@@ -11,9 +11,9 @@ This git project contains a list of useful information on several topics for a d
     - Some useful information on starting using k8s can be found [here](Docker-K8s/forDummy.md)
     - Some useful commands: [K8s useful command](Docker-K8s/K8s_useful_command.md)
     - Some info on Harbor registry on [harbor.md](Docker-K8s/harbor.md)
-    - Service-Accout usage in K8s: [exmple of Cluster Admin](Docker-K8s/cluster-admin.md)
+    - Service-Account usage in K8s: [example of Cluster Admin](Docker-K8s/cluster-admin.md)
     - Some useful command in [helm](Docker-K8s/helm.md)
-    - To sniff packet on K8s cluster [ksniff](Docker-K8s/k8s_capture.md) 
+    - To sniff packet on K8s cluster [ksniff](Docker-K8s/k8s_capture.md)
 5. Usage of [iperf](Generic-Linux/iperf.md)
 6. Usage of [ssh](Generic-Linux/ssh_and_switchoff.md)
 7. Interesting tutorial on [Python](Python/README.md)
@@ -21,4 +21,3 @@ This git project contains a list of useful information on several topics for a d
 ### other link
 interesting links:
 - [K8s interesting deployment  configurations](https://medium.com/@dskydragon/11-kubernetes-deployment-configs-you-should-know-in-2024-1126740926f0?source=email-0b3ea6db1a47-1710121197986-digest.reader-9bad45fbe16d-1126740926f0----0-98------------------d161ea18_fe0d_45f3_b0cc_7ae40e58b231-1)
-

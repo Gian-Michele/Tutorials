@@ -13,10 +13,10 @@ This command create a directory containing the following files:
 ```plaintext
 <helm-chart name>--+
                    + Chart/
-                   + template/--+ 
+                   + template/--+
                                 + NOTES.txt  
                                 + _helpers.tpl  
-                                + deployment.yaml 
+                                + deployment.yaml
                                 + hpa.yaml  
                                 + ingress.yaml  
                                 + service.yaml  
@@ -26,7 +26,7 @@ This command create a directory containing the following files:
 ```
 
 
-**value. yaml** contains the  main configuration of the container, could be modified in order to insert the name of the docker image an the exposure of the port  
+**value. yaml** contains the  main configuration of the container, could be modified in order to insert the name of the docker image an the exposure of the port 
 
 Comparing modified value.yaml (on the right) vs original value.yaml (on the left) we can see below the difference
 
@@ -46,7 +46,7 @@ it is added a parameter nodePort to fix the exposed port to a specific value. In
 
 * to **remove** the pod for the K8s infrastructure the following command:
 
-    helm unistall <pod name> -n <namespace>
+    helm uninstall <pod name> -n <namespace>
 
 
 * ..

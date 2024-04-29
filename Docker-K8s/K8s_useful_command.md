@@ -9,8 +9,7 @@ The main documentation on K8s can be found on [kubernetes.io](https://kubernetes
 
 2. To force a restart of a pod it is possible delete the pod using
 
-
-        kubectl -n <namespace> delete pods <pod name> 
+        kubectl -n <namespace> delete pods <pod name>
 
 3. To verify the status of the secret could be used the following command
 
@@ -24,16 +23,13 @@ The main documentation on K8s can be found on [kubernetes.io](https://kubernetes
 
         kubectl -n <namespace> describe <pods/deployments/services/statefulset> <name>
 
-
 6. To apply a yaml file in a namespace use the command:
 
         kubectl -n <namespace> apply -f <file>.yaml
 
     the <file>.yaml could be a secret, a configMap or a pod etc ...
 
-
 7. The command to log what is running in a pod use the following command for the last 5minutes of log:
-
 
         kubectl -n <namespace> logs -f --since 5m <pod name>
 
@@ -58,4 +54,3 @@ The main documentation on K8s can be found on [kubernetes.io](https://kubernetes
 10. To remove all the evicted pod can be used the following command for a specific namespace:
 
         kubectl get pod -n <namespace> | grep Evicted | awk '{print $1}' | xargs kubectl delete pod -n <namespace>
-
