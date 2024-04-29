@@ -19,17 +19,15 @@ from Classification_Example import binary_classification
 from Classification_Example.multi_class_classification import plot_random_image
 from computer_vision_with_augmented_data import view_random_image, plot_loss, pred_and_plot
 
-download_dataset = False
+download_dataset = True
 gen_model = True    # if False the cnn_model_2 will be used
-model_name = "multiclass_cnn_2nd"
-
-
+model_name = "multiclass_cnn_3th"
 
 def gen_cnn_model(train_data, test_data):
     # Create a CNN model (same as Tiny VGG - https://poloclub.github.io/cnn-explainer/)
     # The number of filter could improve the performance from 10 to 32 or 64
     model_cnn = tf.keras.models.Sequential([
-        tf.keras.layers.Conv2D(filters=10,              # Number of Filter per Layer will pass throught the immage
+        tf.keras.layers.Conv2D(filters=20,              # Number of Filter per Layer will pass throught the immage
                                kernel_size=3,           # Measn (3, 3), is the dimension of the filter (typcal 3, 5, 7), larger value idefify larger thind
                                activation="relu", 
                                strides=1,               # means (1, 1) is default value, is the step of the filter in the image in the two image direction.
@@ -38,10 +36,10 @@ def gen_cnn_model(train_data, test_data):
         tf.keras.layers.MaxPool2D(pool_size=2,          # pool_size can also be (2, 2) -> take the max of a 2x2 matrix reducing the number of element find the most important element of the pixel
                                 padding="valid"),       # padding can also be 'same' in case to maintain the same output inserting zeros, in case of valid the outpu is compressed
                                                         # using "valid" we lose the edge of the image
-        tf.keras.layers.Conv2D(10, 3, activation="relu"),
+        tf.keras.layers.Conv2D(20, 3, activation="relu"),
         tf.keras.layers.MaxPool2D(pool_size=2,          # pool_size can also be (2, 2)
                                 padding="valid"),       # padding can also be 'same' in case to maintain the same output inserting zeros, in case of valid the outpu is compressed
-        tf.keras.layers.Conv2D(10, 3, activation="relu"), # activation='relu' == tf.keras.layers.Activations(tf.nn.relu)
+        tf.keras.layers.Conv2D(20, 3, activation="relu"), # activation='relu' == tf.keras.layers.Activations(tf.nn.relu)
         tf.keras.layers.MaxPool2D(),                    # default input similar to the others
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(10, activation="softmax") # MultiClass Classification activation output
