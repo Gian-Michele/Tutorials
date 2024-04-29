@@ -14,4 +14,7 @@ Below a list of interesting link tò learn ml in Better way:
 
 # Topic:
 - Classification Problem
-- Vision Problem with [CNN](ConvNeuralNetwork_and_ComputerVision/README.md) 
+- Vision Problem with [CNN](ConvNeuralNetwork_and_ComputerVision/README.md)
+
+# Other link
+- Look for ML model at [kaggle.com](https://www.kaggle.com/models) 
