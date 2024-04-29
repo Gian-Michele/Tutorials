@@ -59,12 +59,12 @@ def view_random_image(target_dir: str, target_class: str):
   """ Read an images from a directory for a specific class (witch is a subdurectory)"""
   # Setup target directory (we'll view images from here)
   target_folder = target_dir+target_class
-
+  if len(target_folder.split('/'))<3:
+      target_folder = target_dir+'/'+target_class
   # Get a random image path
-  random_image = random.sample(os.listdir(target_folder), 1)
-
+  random_image = random.sample(os.listdir(target_folder), 1)  
   # Read in the image and plot it using matplotlib
-  img = mpimg.imread(target_folder + "/" + random_image[0])
+  img = mpimg.imread(target_folder + "/" + random_image[0])  
   plt.imshow(img)
   plt.title(target_class)
   plt.axis("off");

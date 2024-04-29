@@ -7,7 +7,7 @@ from os import getcwd
 import random
 #import binary_classification as bc
 
-from binary_classification import custom_confusion_matrix
+from Classification_Example.binary_classification import custom_confusion_matrix
 
 show_figure = True
 already_saved_model = True

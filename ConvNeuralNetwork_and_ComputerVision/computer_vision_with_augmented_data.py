@@ -17,7 +17,7 @@ import random
 import pandas as pd
 
 download_dataset = False
-gen_model = True    # if False the cnn_model_2 will be used
+gen_model = False    # if False the cnn_model_2 will be used
 
 
 def gen_cnn_model(train_data, valid_data):
@@ -68,13 +68,14 @@ def view_random_image(target_dir: str, target_class: str):
   """ Read an images from a directory for a specific class (witch is a subdurectory)"""
   # Setup target directory (we'll view images from here)
   target_folder = target_dir+target_class
+  if len(target_folder.split('/'))<3:
+    target_folder = target_dir+'/'+target_class
 
   # Get a random image path
   random_image = random.sample(os.listdir(target_folder), 1)
 
   # Read in the image and plot it using matplotlib
   img = mpimg.imread(target_folder + "/" + random_image[0])
-  plt.figure()
   plt.imshow(img)
   plt.title(target_class)
   plt.axis("off");
@@ -132,8 +133,9 @@ def pred_and_plot(model, filename, class_names, train_data):
     """
 
     print("------------------------------------------")
+    img = tf.io.read_file(filename)
     # this step is to format the image in the correct shape to use in our model
-    if train_data.image_shape != steak.shape:
+    if train_data.image_shape != img.shape:
         resize_steak = load_and_prep_image(filename, img_shape=train_data.image_shape[0])
         print("Images have different shapes")
         if train_data.image_shape != resize_steak.shape:
@@ -146,10 +148,16 @@ def pred_and_plot(model, filename, class_names, train_data):
     print("-------------------------------------------")
     resize_steak_dimx_4 = tf.expand_dims(resize_steak, axis=0) # increase the size to 4 from [244, 244 ,3] to [ 1, 244, 244, 3] required to input in a prediction
     pred = model.predict(resize_steak_dimx_4)
-    print(f"Probability of Result is {pred} this means that it is a: {class_names[int(tf.round(pred))]}")
-
+    
     # Get the predicted class
-    pred_class = class_names[int(tf.round(pred)[0][0])]
+    if len(pred[0]) > 1: # check for multi-class
+        pred_class = class_names[pred.argmax()]
+        print(f"Probability of Result is {pred} this means that it is a: {pred_class}")
+
+    else:    
+        # this is a binary classification
+        pred_class = class_names[int(tf.round(pred)[0][0])]
+        print(f"Probability of Result is {pred} this means that it is a: {class_names[int(tf.round(pred))]}")
 
     # Plot the image and predicted class
     plt.figure()
@@ -185,11 +193,13 @@ if __name__ == '__main__':
     print(class_names)
 
     # look an image from training dataset
+    plt.figure()
     examle_of_steak_img = view_random_image(target_dir='pizza_steak/train/', target_class='steak')
 
-    examle_of_pizza_img = view_random_image(target_dir='pizza_steak/train/', target_class='pizza')
-
     print(f'steak image value: {examle_of_steak_img} the dimension is: {examle_of_steak_img.shape} ')
+
+    plt.figure()
+    examle_of_pizza_img = view_random_image(target_dir='pizza_steak/train/', target_class='pizza')
 
     print(f'pizza image value: {examle_of_pizza_img} the dimension is: {examle_of_pizza_img.shape} ')
     
@@ -199,7 +209,7 @@ if __name__ == '__main__':
 
     # Data Augmentation Class - in order to change the image format   
     train_datagen_augmentation = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255,
-                                                                    rotation_range=0.2,
+                                                                    rotation_range=20,
                                                                     zoom_range=0.2,
                                                                     width_shift_range=0.2,
                                                                     height_shift_range=0.3,
@@ -247,13 +257,13 @@ if __name__ == '__main__':
     #loss, accuracy = cnn_model.evaluate(train_data, valid_data)
     cnn_model.summary()
 
-     # Additional immage to predict
+    # Additional immage to predict
     if download_dataset is True:
         url = "https://raw.githubusercontent.com/mrdbourke/tensorflow-deep-learning/main/images/03-steak.jpeg"
         new_stack_image = wget.download(url)
     else:
         new_stack_image = "03-steak.jpeg"    
-    steak = mpimg.imread(new_stack_image)
+    #steak = mpimg.imread(new_stack_image)
     
     pred_and_plot(model=cnn_model,
                   filename=new_stack_image,
