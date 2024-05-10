@@ -4,9 +4,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from os import getcwd
+import os
+import sys
 import random
 #import binary_classification as bc
-
+PATH = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + '..' + os.path.sep 
+sys.path.append(PATH)
 from Classification_Example.binary_classification import custom_confusion_matrix
 
 show_figure = True
