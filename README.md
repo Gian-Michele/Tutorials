@@ -22,5 +22,6 @@ This git project contains a list of useful information on several topics for a d
 interesting links:
 - [K8s interesting deployment  configurations](https://medium.com/@dskydragon/11-kubernetes-deployment-configs-you-should-know-in-2024-1126740926f0?source=email-0b3ea6db1a47-1710121197986-digest.reader-9bad45fbe16d-1126740926f0----0-98------------------d161ea18_fe0d_45f3_b0cc_7ae40e58b231-1)
 - Tensorflow models and other dataset on [kaggle](https://www.kaggle.com)
+- Paper and Code on ML mode on [patherwithcode](https://paperwithconde.com/)
 - Specific 5G Traffic Model Dataset: [DatasetModel](https://www.kaggle.com/datasets/kimdaegyeom/5g-traffic-datasets)
 - ....
