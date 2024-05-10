@@ -8,7 +8,7 @@ The installation of Anaconda can be found in [installation_link](https://docs.co
 
 When Anaconda is installed a new venv can be created using command:
 
-        conda create -n yourenvname python=3.7 anaconda
+        conda create -n yourenvname python=3.7 
 
 the activation of the env can be done  using command:
 
