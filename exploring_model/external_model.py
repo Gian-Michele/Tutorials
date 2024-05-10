@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 import datetime
 
-model_generation = True
-download_dataset = True
+model_generation = False
+download_dataset = False
 
 def create_tensorboard_callback(dir_name, experiment_name):
   log_dir = dir_name + "/" + experiment_name + "/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
