@@ -4,3 +4,13 @@ pizza_steak/*
 10_food_classes_all_data/*
 model_0/*
 model_1/*
+10_food_classes_10_percent.zip
+10_food_classes_10_percent/*
+ConvNeuralNetwork_and_ComputerVision/__MACOSX/*
+__MACOSX/*
+exploring_model/__MACOSX/*
+extras/__pycache__/*
+ten_percent_model0_checkpoints_weights/*
+ten_percent_model1_checkpoints_weights/*
+tensorflow_hub/resnet50V2/20240510-103017/validation/*
+transfer_learning/*
