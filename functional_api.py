@@ -1,3 +1,6 @@
+# Python script to use functiona api of tensorflow to create a model, save a model, hold model checkpoint and regene model 
+# from checkpoints
+
 import tensorflow as tf
 from tensorflow import keras
 from keras import layers
@@ -8,8 +11,9 @@ from extras.helper_functions import create_tensorboard_callback, plot_loss_curve
 import matplotlib.pyplot as plt
 
 save_model = True
-regen_model0 = True
-regen_model1 = True
+regen_model0 = False
+regen_model1 = False
+other_5epoch = False
 download_data = False
 
 # Get 10% of the data of the 10 
@@ -76,10 +80,10 @@ if regen_model0 is True:
                 metrics=["accuracy"])
 
     # Setup checkpoint path
-    checkpoint_path = "ten_percent_model0_checkpoints_weights/checkpoint.ckpt" # note: remember saving directly to Colab is temporary
+    checkpoint0_path = "ten_percent_model0_checkpoints_weights/checkpoint.ckpt" # note: remember saving directly to Colab is temporary
 
     # Create a ModelCheckpoint callback that saves the model's weights only
-    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint0_path,
                                                             save_weights_only=True, # set to False to save the entire model
                                                             save_best_only=True, # save only the best model weights instead of a model every epoch
                                                             save_freq="epoch", # save every epoch
@@ -111,71 +115,63 @@ else:
 
 ####################################################################################
 ## Below the sequence of creation, compile and fit a model using Functional API
+
+
+# NEW: Newer versions of TensorFlow (2.10+) can use the tensorflow.keras.layers API directly for data augmentation
+data_augmentation = keras.Sequential([
+layers.RandomFlip("horizontal"),
+layers.RandomRotation(0.2),
+layers.RandomZoom(0.2),
+layers.RandomHeight(0.2),
+layers.RandomWidth(0.2),
+# preprocessing.Rescaling(1./255) # keep for ResNet50V2, remove for EfficientNet
+], name ="data_augmentation")
+
+
+# 3. Create inputs into the base model
+inputs = tf.keras.layers.Input(shape=(224, 224, 3), name="input_layer")
+x = data_augmentation(inputs)
+
+# 4. If using ResNet50V2, add this to speed up convergence, remove for EfficientNetV2 because rescale in is already in the model)
+# x = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)(inputs)
+
+# 5. Pass the inputs to the base_model (note: using tf.keras.applications, EfficientNetV2 inputs don't have to be normalized)
+x = base_model(x)
+# Check data shape after passing it to base_model
+print(f"Shape after base_model: {x.shape}")
+# x is a "feature vector", this means a learned representation of the input data
+
+# 6. Average pool the outputs of the base model (aggregate all the most important information, reduce number of computations)
+# see https://stackoverflow.com/questions/49295311/what-is-the-difference-between-flatten-and-globalaveragepooling2d-in-keras
+# https://saturncloud.io/blog/understanding-the-difference-between-flatten-and-globalaveragepooling2d-in-keras/
+x = tf.keras.layers.GlobalAveragePooling2D(name="global_average_pooling_layer")(x)
+print(f"After GlobalAveragePooling2D(): {x.shape}")
+
+# 7. Create the output activation layer
+outputs = tf.keras.layers.Dense(10, activation="softmax", name="output_layer")(x)
+
+# 8. Combine the inputs with the outputs into a model
+model_1 = tf.keras.Model(inputs, outputs)
+
+########################################################################
+# Step 9 and 10 are the same of traditional model creation
+# 9. Compile the model
+model_1.compile(loss='categorical_crossentropy',
+            optimizer=tf.keras.optimizers.Adam(),
+            metrics=["accuracy"])
+
+# Setup checkpoint path
+checkpoint_path = "ten_percent_model1_checkpoints_weights/checkpoint.ckpt" # note: remember saving directly to Colab is temporary
+
+# Create a ModelCheckpoint callback that saves the model's weights only
+checkpoint_callback_1 = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                        save_weights_only=True, # set to False to save the entire model
+                                                        save_best_only=True, # save only the best model weights instead of a model every epoch
+                                                        save_freq="epoch", # save every epoch
+                                                        verbose=1)
+# fit the model with data augmentation
 if regen_model1 is True:
-    # 1. Create base model with "https://www.tensorflow.org/api_docs/python/tf/keras/applications"
-    # https://www.tensorflow.org/api_docs/python/tf/keras/applications/EfficientNetB0
-    #base_model = tf.keras.applications.efficientnet_v2.EfficientNetV2B0(include_top=False)
 
-    # OLD
-    # base_model = tf.keras.applications.EfficientNetB0(include_top=False)
-
-    # 2. Freeze the base model (so the pre-learned patterns remain)
-    #base_model.trainable = False
-
-
-    # NEW: Newer versions of TensorFlow (2.10+) can use the tensorflow.keras.layers API directly for data augmentation
-    data_augmentation = keras.Sequential([
-    layers.RandomFlip("horizontal"),
-    layers.RandomRotation(0.2),
-    layers.RandomZoom(0.2),
-    layers.RandomHeight(0.2),
-    layers.RandomWidth(0.2),
-    # preprocessing.Rescaling(1./255) # keep for ResNet50V2, remove for EfficientNet
-    ], name ="data_augmentation")
-
-
-    # 3. Create inputs into the base model
-    inputs = tf.keras.layers.Input(shape=(224, 224, 3), name="input_layer")
-    x = data_augmentation(inputs)
-
-    # 4. If using ResNet50V2, add this to speed up convergence, remove for EfficientNetV2 because rescale in is already in the model)
-    # x = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)(inputs)
-
-    # 5. Pass the inputs to the base_model (note: using tf.keras.applications, EfficientNetV2 inputs don't have to be normalized)
-    x = base_model(x)
-    # Check data shape after passing it to base_model
-    print(f"Shape after base_model: {x.shape}")
-    # x is a "feature vector", this means a learned representation of the input data
-
-    # 6. Average pool the outputs of the base model (aggregate all the most important information, reduce number of computations)
-    # see https://stackoverflow.com/questions/49295311/what-is-the-difference-between-flatten-and-globalaveragepooling2d-in-keras
-    # https://saturncloud.io/blog/understanding-the-difference-between-flatten-and-globalaveragepooling2d-in-keras/
-    x = tf.keras.layers.GlobalAveragePooling2D(name="global_average_pooling_layer")(x)
-    print(f"After GlobalAveragePooling2D(): {x.shape}")
-
-    # 7. Create the output activation layer
-    outputs = tf.keras.layers.Dense(10, activation="softmax", name="output_layer")(x)
-
-    # 8. Combine the inputs with the outputs into a model
-    model_1 = tf.keras.Model(inputs, outputs)
-
-    ########################################################################
-    # Step 9 and 10 are the same of traditional model creation
-    # 9. Compile the model
-    model_1.compile(loss='categorical_crossentropy',
-                optimizer=tf.keras.optimizers.Adam(),
-                metrics=["accuracy"])
-
-    # Setup checkpoint path
-    checkpoint_path = "ten_percent_model1_checkpoints_weights/checkpoint.ckpt" # note: remember saving directly to Colab is temporary
-
-    # Create a ModelCheckpoint callback that saves the model's weights only
-    checkpoint_callback_1 = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                            save_weights_only=True, # set to False to save the entire model
-                                                            save_best_only=True, # save only the best model weights instead of a model every epoch
-                                                            save_freq="epoch", # save every epoch
-                                                            verbose=1)
-    
     # 10. Fit the model (we use less steps for validation so it's faster)
     history_10_percent = model_1.fit(train_data_10_percent,
                                     epochs=5,
@@ -193,7 +189,7 @@ if regen_model1 is True:
 
     if save_model is True:
             # the new model name
-            model_0.save("model_1")
+            model_1.save("model_1")
 else:
     # load the model name: model_1
     model_1= tf.keras.models.load_model("model_1")
@@ -204,5 +200,33 @@ model_0.evaluate(test_data_10_percent)
 
 print('Evaluation of model 1')
 model_1.evaluate(test_data_10_percent)
+
+if other_5epoch is True:
+    # try to train for 10 epocs starting from the 5 previusly  saved
+    fine_tune_epochs = 10
+
+    # other way to to load the weight and evaluete model 1
+    model_1.load_weights(checkpoint_path)
+    model_1.evaluate(test_data_10_percent)
+
+    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_path)
+    checkpoint = tf.train.Checkpoint(optimizer=tf.keras.optimizers.Adam(), model=model_1)
+    checkpoint.restore(latest_checkpoint)
+    print(f"Restored from {latest_checkpoint}")
+
+    print("No checkpoint found. Starting training from scratch.")
+    # Refit the model (same as model_2 except with more trainable layers)
+    history_fine_10_percent_data_aug = model_1.fit(train_data_10_percent,
+                                               epochs=fine_tune_epochs,
+                                               validation_data=test_data_10_percent,
+                                               initial_epoch=5, # start from previous last epoch
+                                               validation_steps=int(0.25 * len(test_data_10_percent)),
+                                               callbacks=[create_tensorboard_callback("transfer_learning", "10_percent_fine_tune_last_10")]) # name experiment appropriately
+
+    plot_loss_curves(history_fine_10_percent_data_aug)
+
+    if save_model is True:
+        # the new model name
+        model_1.save("model_1")
 
 plt.show()
